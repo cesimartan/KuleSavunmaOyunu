@@ -1,3 +1,5 @@
+using KuleSavunmaOyunu.UI;
+
 namespace KuleSavunmaOyunu
 {
     internal static class Program

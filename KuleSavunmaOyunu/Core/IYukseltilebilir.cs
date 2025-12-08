@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KuleSavunmaOyunu.Core
+﻿namespace KuleSavunmaOyunu.Core
 {
-    internal class IYukseltilebilir
+    public interface IYukseltilebilir
     {
+        void Yukselt();
     }
 }

@@ -1,12 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Core
 {
-    internal class BuyuKulesi
+    public class BuyuKulesi : Kule
     {
+        public BuyuKulesi(Point konum) : base(konum)
+        {
+            hasar = 25;
+            menzil = 130;
+            hiz = 0.66;   // yaklaşık 1.5 sn'de 1 atış (1/0.66 ≈ 1.5)
+            fiyat = 200;
+        }
+
+        public override void Saldir(List<Dusman> dusmanlar)
+        {
+            if (!SaldiriHazirMi())
+                return;
+
+            var hedefler = dusmanlar
+                .Where(d => d.Can > 0 && MenziIcindemi(d))
+                .OrderBy(d => d.Mesafe(Konum))
+                .Take(5)
+                .ToList();
+
+            if (!hedefler.Any())
+                return;
+
+            foreach (var dusman in hedefler)
+            {
+                dusman.HasarAl(hasar);
+            }
+        }
     }
 }

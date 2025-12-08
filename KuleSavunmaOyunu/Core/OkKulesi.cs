@@ -1,12 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Core
 {
-    internal class OkKulesi
+    public class OkKulesi : Kule
     {
+        public OkKulesi(Point konum) : base(konum)
+        {
+            hasar = 15;
+            menzil = 150;
+            hiz = 1.0;   // saniyede 1 atış
+            fiyat = 100;
+        }
+
+        public override void Saldir(List<Dusman> dusmanlar)
+        {
+            if (!SaldiriHazirMi())
+                return;
+
+            // MenziIcindeki düşmanlardan en yakın olanı bul
+            var hedef = dusmanlar
+                .Where(d => d.Can > 0 && MenziIcindemi(d))
+                .OrderBy(d => d.Mesafe(Konum))
+                .FirstOrDefault();
+
+            if (hedef != null)
+            {
+                hedef.HasarAl(hasar);
+            }
+        }
     }
 }

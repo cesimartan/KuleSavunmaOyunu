@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Core
 {
-    internal class ISaldirabilir
+    public interface ISaldirabilir
     {
+        void Saldir(List<Dusman> dusmanlar);
     }
 }

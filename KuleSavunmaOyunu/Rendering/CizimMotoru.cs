@@ -1,16 +1,117 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuleSavunmaOyunu.Game;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using KuleSavunmaOyunu.Core;
 using KuleSavunmaOyunu.Entities;
-
+using KuleSavunmaOyunu.Game;
 
 namespace KuleSavunmaOyunu.Rendering
 {
-    internal class CizimMotoru
+    public class CizimMotoru
     {
+        // Ana çizim fonksiyonu
+        public void Ciz(Graphics g, OyunYonetici oyun)
+        {
+            if (oyun == null)
+                return;
+
+            // Arka planı temizlemiyoruz, panelin BackColor'ı zaten var.
+
+            CizYol(g, oyun.Yol);
+            CizKuleler(g, oyun.Kuleler);
+            CizDusmanlar(g, oyun.Dusmanlar);
+        }
+
+        private void CizYol(Graphics g, Yol yol)
+        {
+            var noktalar = yol.Noktalar;
+            if (noktalar == null || noktalar.Count < 2)
+                return;
+
+            using (var kalem = new Pen(Color.SaddleBrown, 20))
+            {
+                g.DrawLines(kalem, new List<Point>(noktalar).ToArray());
+            }
+        }
+
+        private void CizKuleler(Graphics g, List<Kule> kuleler)
+        {
+            int kuleBoyut = 30;
+
+            foreach (var kule in kuleler)
+            {
+                // Menzil çemberi
+                using (var menzilKalem = new Pen(Color.FromArgb(80, Color.LightBlue), 1))
+                {
+                    int r = kule.Menzil;
+                    g.DrawEllipse(menzilKalem,
+                        kule.Konum.X - r,
+                        kule.Konum.Y - r,
+                        r * 2,
+                        r * 2);
+                }
+
+                // Kule gövdesi (kare)
+                Rectangle rect = new Rectangle(
+                    kule.Konum.X - kuleBoyut / 2,
+                    kule.Konum.Y - kuleBoyut / 2,
+                    kuleBoyut,
+                    kuleBoyut);
+
+                using (var firca = new SolidBrush(Color.DarkSlateGray))
+                using (var kalem = new Pen(Color.White, 2))
+                {
+                    g.FillRectangle(firca, rect);
+                    g.DrawRectangle(kalem, rect);
+                }
+            }
+        }
+
+        private void CizDusmanlar(Graphics g, List<Dusman> dusmanlar)
+        {
+            int yaricap = 10;
+
+            foreach (var d in dusmanlar)
+            {
+                if (d.Can <= 0)
+                    continue;
+
+                RectangleF daire = new RectangleF(
+                    d.Konum.X - yaricap,
+                    d.Konum.Y - yaricap,
+                    yaricap * 2,
+                    yaricap * 2);
+
+                using (var firca = new SolidBrush(Color.DarkRed))
+                using (var kalem = new Pen(Color.Black, 1))
+                {
+                    g.FillEllipse(firca, daire);
+                    g.DrawEllipse(kalem, daire);
+                }
+
+                // Can barı
+                float canOrani = d.Can / 100f; // max can 100 varsayımı, istersen düzenleriz
+                if (canOrani < 0) canOrani = 0;
+                if (canOrani > 1) canOrani = 1;
+
+                RectangleF arkaBar = new RectangleF(
+                    d.Konum.X - yaricap,
+                    d.Konum.Y - yaricap - 6,
+                    yaricap * 2,
+                    4);
+
+                RectangleF onBar = new RectangleF(
+                    arkaBar.X,
+                    arkaBar.Y,
+                    arkaBar.Width * canOrani,
+                    arkaBar.Height);
+
+                using (var arkaFirca = new SolidBrush(Color.DarkGray))
+                using (var onFirca = new SolidBrush(Color.LimeGreen))
+                {
+                    g.FillRectangle(arkaFirca, arkaBar);
+                    g.FillRectangle(onFirca, onBar);
+                }
+            }
+        }
     }
 }
