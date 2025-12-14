@@ -10,8 +10,8 @@ namespace KuleSavunmaOyunu.Game
         public int MevcutDalga { get; private set; } = 0;
 
         // Temel ayarlar
-        private readonly int temelDusmanSayisi = 4;
-        private readonly int dusmanSayisiArtis = 2;
+        private readonly int temelDusmanSayisi = 8;
+        private readonly int dusmanSayisiArtis = 3;
         private readonly int temelCan = 40;
         private readonly int canArtis = 10;
         private readonly float temelHiz = 1.2f;
@@ -21,9 +21,9 @@ namespace KuleSavunmaOyunu.Game
         {
         }
 
-        /// <summary>
-        /// Yeni bir düşman dalgası üretir ve dalga sayacını 1 arttırır.
-        /// </summary>
+
+        // Yeni bir düşman dalgası üretir ve dalga sayacını 1 arttırır.
+
         public List<Dusman> YeniDalgaOlustur(Yol yol)
         {
             MevcutDalga++;
@@ -34,11 +34,14 @@ namespace KuleSavunmaOyunu.Game
 
             var liste = new List<Dusman>();
 
+            int spawnAraligiTicks = 10; // timer 30ms ise ~0.3sn
+
             for (int i = 0; i < dusmanSayisi; i++)
             {
-                // Aynı yolu kullanan düşmanlar
                 var yolKopya = new List<Point>(yol.Noktalar);
-                var dusman = new Dusman(yolKopya, dusmanCan, dusmanHiz);
+                int gecikme = i * spawnAraligiTicks;
+
+                var dusman = new Dusman(yolKopya, dusmanCan, dusmanHiz, gecikme);
                 liste.Add(dusman);
             }
 

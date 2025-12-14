@@ -21,7 +21,7 @@ namespace KuleSavunmaOyunu.Game
 
         public int Dalga => DalgaYonetici.MevcutDalga;
 
-        // Ayarlar (istersen ileride ayrı bir sınıfa taşıyabilirsin)
+        // Ayarlar
         private const int BaslangicAltin = 300;
         private const int BaslangicCan = 10;
         private const int DusmanOldurAltin = 20;
@@ -37,9 +37,8 @@ namespace KuleSavunmaOyunu.Game
             Skor = 0;
         }
 
-        /// <summary>
-        /// Timer her Tick olduğunda Form tarafından çağrılacak ana metod.
-        /// </summary>
+       // Timer her Tick olduğunda Form tarafından çağrılacak ana metod.
+        
         public void Guncelle()
         {
             // 1) Düşmanları ilerlet
@@ -55,9 +54,8 @@ namespace KuleSavunmaOyunu.Game
             GecenleriIsle();
         }
 
-        /// <summary>
-        /// Yeni bir dalga başlatır (listeye yeni düşmanlar ekler).
-        /// </summary>
+        // Yeni bir dalga başlatır (listeye yeni düşmanlar ekler).
+        
         public void YeniDalgaBaslat()
         {
             var yeniDusmanlar = DalgaYonetici.YeniDalgaOlustur(Yol);
@@ -74,14 +72,14 @@ namespace KuleSavunmaOyunu.Game
 
         private void KuleleriSaldirt()
         {
-            if (Dusmanlar.Count == 0)
+            var hedefler = Dusmanlar.Where(d => d.Can > 0 && d.Aktif).ToList();
+            if (hedefler.Count == 0)
                 return;
 
             foreach (var k in Kuleler)
-            {
-                k.Saldir(Dusmanlar);
-            }
+                k.Saldir(hedefler);
         }
+
 
         private void OldurenleriIsle()
         {
@@ -120,10 +118,10 @@ namespace KuleSavunmaOyunu.Game
                 Can = 0;
         }
 
-        /// <summary>
-        /// Form'da tıklanan noktaya, seçilen tipte kule koymaya çalışır.
-        /// Başarılıysa true döner.
-        /// </summary>
+       
+        // Form'da tıklanan noktaya, seçilen tipte kule koymaya çalışır.
+        // Başarılıysa true döner.
+       
         public bool KuleKoy(Point konum, KuleTipi tip)
         {
             // 1) Fiyat kontrolü

@@ -33,6 +33,11 @@ namespace KuleSavunmaOyunu.UI
         {
             components = new System.ComponentModel.Container();
             panelUst = new Panel();
+            lblSkorBaslik = new Label();
+            lblDalgaBaslik = new Label();
+            lblCanBaslik = new Label();
+            lblAltinBaslik = new Label();
+            lblDurum = new Label();
             lblSkor = new Label();
             lblDalga = new Label();
             lblCan = new Label();
@@ -43,7 +48,9 @@ namespace KuleSavunmaOyunu.UI
             btnOkKulesi = new Button();
             panelOyunAlani = new Panel();
             timerOyun = new System.Windows.Forms.Timer(components);
-            lblDurum = new Label();
+            label1 = new Label();
+            label2 = new Label();
+            label3 = new Label();
             panelUst.SuspendLayout();
             panelAlt.SuspendLayout();
             SuspendLayout();
@@ -51,6 +58,10 @@ namespace KuleSavunmaOyunu.UI
             // panelUst
             // 
             panelUst.BackColor = SystemColors.ActiveBorder;
+            panelUst.Controls.Add(lblSkorBaslik);
+            panelUst.Controls.Add(lblDalgaBaslik);
+            panelUst.Controls.Add(lblCanBaslik);
+            panelUst.Controls.Add(lblAltinBaslik);
             panelUst.Controls.Add(lblDurum);
             panelUst.Controls.Add(lblSkor);
             panelUst.Controls.Add(lblDalga);
@@ -59,13 +70,65 @@ namespace KuleSavunmaOyunu.UI
             panelUst.Dock = DockStyle.Top;
             panelUst.Location = new Point(0, 0);
             panelUst.Name = "panelUst";
-            panelUst.Size = new Size(867, 60);
+            panelUst.Size = new Size(1205, 60);
             panelUst.TabIndex = 0;
+            // 
+            // lblSkorBaslik
+            // 
+            lblSkorBaslik.AutoSize = true;
+            lblSkorBaslik.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblSkorBaslik.Location = new Point(604, 2);
+            lblSkorBaslik.Name = "lblSkorBaslik";
+            lblSkorBaslik.Size = new Size(47, 18);
+            lblSkorBaslik.TabIndex = 8;
+            lblSkorBaslik.Text = "SKOR";
+            // 
+            // lblDalgaBaslik
+            // 
+            lblDalgaBaslik.AutoSize = true;
+            lblDalgaBaslik.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblDalgaBaslik.Location = new Point(439, 2);
+            lblDalgaBaslik.Name = "lblDalgaBaslik";
+            lblDalgaBaslik.Size = new Size(53, 18);
+            lblDalgaBaslik.TabIndex = 7;
+            lblDalgaBaslik.Text = "DALGA";
+            // 
+            // lblCanBaslik
+            // 
+            lblCanBaslik.AutoSize = true;
+            lblCanBaslik.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCanBaslik.Location = new Point(246, 4);
+            lblCanBaslik.Name = "lblCanBaslik";
+            lblCanBaslik.Size = new Size(36, 18);
+            lblCanBaslik.TabIndex = 6;
+            lblCanBaslik.Text = "CAN";
+            // 
+            // lblAltinBaslik
+            // 
+            lblAltinBaslik.AutoSize = true;
+            lblAltinBaslik.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblAltinBaslik.Location = new Point(65, 4);
+            lblAltinBaslik.Name = "lblAltinBaslik";
+            lblAltinBaslik.Size = new Size(50, 18);
+            lblAltinBaslik.TabIndex = 5;
+            lblAltinBaslik.Text = "ALTIN";
+            // 
+            // lblDurum
+            // 
+            lblDurum.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblDurum.AutoSize = true;
+            lblDurum.ForeColor = Color.White;
+            lblDurum.Location = new Point(1034, 22);
+            lblDurum.Name = "lblDurum";
+            lblDurum.Size = new Size(54, 20);
+            lblDurum.TabIndex = 4;
+            lblDurum.Text = "Durum";
+            lblDurum.Click += lblDurum_Click;
             // 
             // lblSkor
             // 
             lblSkor.AutoSize = true;
-            lblSkor.Location = new Point(604, 18);
+            lblSkor.Location = new Point(604, 22);
             lblSkor.Name = "lblSkor";
             lblSkor.Size = new Size(38, 20);
             lblSkor.TabIndex = 3;
@@ -74,7 +137,7 @@ namespace KuleSavunmaOyunu.UI
             // lblDalga
             // 
             lblDalga.AutoSize = true;
-            lblDalga.Location = new Point(440, 18);
+            lblDalga.Location = new Point(439, 22);
             lblDalga.Name = "lblDalga";
             lblDalga.Size = new Size(49, 20);
             lblDalga.TabIndex = 2;
@@ -83,31 +146,36 @@ namespace KuleSavunmaOyunu.UI
             // lblCan
             // 
             lblCan.AutoSize = true;
-            lblCan.Location = new Point(246, 18);
+            lblCan.Location = new Point(246, 22);
             lblCan.Name = "lblCan";
             lblCan.Size = new Size(34, 20);
             lblCan.TabIndex = 1;
             lblCan.Text = "Can";
+            lblCan.Click += lblCan_Click;
             // 
             // lblAltin
             // 
             lblAltin.AutoSize = true;
-            lblAltin.Location = new Point(51, 18);
+            lblAltin.Location = new Point(65, 22);
             lblAltin.Name = "lblAltin";
             lblAltin.Size = new Size(40, 20);
             lblAltin.TabIndex = 0;
             lblAltin.Text = "Altın";
+            lblAltin.Click += lblAltin_Click;
             // 
             // panelAlt
             // 
             panelAlt.BackColor = SystemColors.ControlDark;
+            panelAlt.Controls.Add(label3);
+            panelAlt.Controls.Add(label2);
+            panelAlt.Controls.Add(label1);
             panelAlt.Controls.Add(btnBuyuKulesi);
             panelAlt.Controls.Add(btnTopKulesi);
             panelAlt.Controls.Add(btnOkKulesi);
             panelAlt.Dock = DockStyle.Bottom;
-            panelAlt.Location = new Point(0, 384);
+            panelAlt.Location = new Point(0, 608);
             panelAlt.Name = "panelAlt";
-            panelAlt.Size = new Size(867, 100);
+            panelAlt.Size = new Size(1205, 100);
             panelAlt.TabIndex = 1;
             panelAlt.Paint += panelAlt_Paint;
             // 
@@ -150,7 +218,7 @@ namespace KuleSavunmaOyunu.UI
             panelOyunAlani.Dock = DockStyle.Fill;
             panelOyunAlani.Location = new Point(0, 60);
             panelOyunAlani.Name = "panelOyunAlani";
-            panelOyunAlani.Size = new Size(867, 324);
+            panelOyunAlani.Size = new Size(1205, 548);
             panelOyunAlani.TabIndex = 2;
             panelOyunAlani.Paint += panelOyunAlani_Paint;
             panelOyunAlani.MouseClick += panelOyunAlani_MouseClick;
@@ -161,23 +229,41 @@ namespace KuleSavunmaOyunu.UI
             timerOyun.Interval = 30;
             timerOyun.Tick += timerOyun_Tick;
             // 
-            // lblDurum
+            // label1
             // 
-            lblDurum.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            lblDurum.AutoSize = true;
-            lblDurum.ForeColor = Color.White;
-            lblDurum.Location = new Point(756, 18);
-            lblDurum.Name = "lblDurum";
-            lblDurum.Size = new Size(54, 20);
-            lblDurum.TabIndex = 4;
-            lblDurum.Text = "Durum";
-            lblDurum.Click += lblDurum_Click;
+            label1.AutoSize = true;
+            label1.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label1.Location = new Point(126, 16);
+            label1.Name = "label1";
+            label1.Size = new Size(35, 18);
+            label1.TabIndex = 6;
+            label1.Text = "100";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label2.Location = new Point(418, 16);
+            label2.Name = "label2";
+            label2.Size = new Size(35, 18);
+            label2.TabIndex = 7;
+            label2.Text = "250";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label3.Location = new Point(679, 16);
+            label3.Name = "label3";
+            label3.Size = new Size(35, 18);
+            label3.TabIndex = 8;
+            label3.Text = "200";
             // 
             // OyunForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(867, 484);
+            ClientSize = new Size(1205, 708);
             Controls.Add(panelOyunAlani);
             Controls.Add(panelAlt);
             Controls.Add(panelUst);
@@ -190,6 +276,7 @@ namespace KuleSavunmaOyunu.UI
             panelUst.ResumeLayout(false);
             panelUst.PerformLayout();
             panelAlt.ResumeLayout(false);
+            panelAlt.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -207,5 +294,12 @@ namespace KuleSavunmaOyunu.UI
         private Panel panelOyunAlani;
         private System.Windows.Forms.Timer timerOyun;
         private Label lblDurum;
+        private Label lblSkorBaslik;
+        private Label lblDalgaBaslik;
+        private Label lblCanBaslik;
+        private Label lblAltinBaslik;
+        private Label label3;
+        private Label label2;
+        private Label label1;
     }
 }

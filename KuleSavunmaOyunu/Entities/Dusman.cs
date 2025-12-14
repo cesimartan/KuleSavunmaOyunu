@@ -15,6 +15,11 @@ namespace KuleSavunmaOyunu.Entities
         // Hareket hızı (piksel / tick gibi düşünebilirsin)
         public float Hiz { get; private set; }
 
+        //başlangıç gecikmesi (tick)
+        private int baslangicGecikmeTicks;
+        public bool Aktif => baslangicGecikmeTicks <= 0;
+        public int MaksCan { get; private set; }
+
         // Yol üzerindeki noktalar
         private readonly List<Point> yolNoktalari;
         private int hedefIndex;
@@ -22,7 +27,7 @@ namespace KuleSavunmaOyunu.Entities
 
         public bool HedefeUlasti => hedefeUlasti;
 
-        public Dusman(List<Point> yol, int baslangicCan = 50, float hiz = 1.5f)
+        public Dusman(List<Point> yol, int baslangicCan = 50, float hiz = 1.5f, int baslangicGecikmeTicks = 0)
         {
             if (yol == null || yol.Count == 0)
                 throw new ArgumentException("Yol boş olamaz", nameof(yol));
@@ -30,56 +35,61 @@ namespace KuleSavunmaOyunu.Entities
             yolNoktalari = yol;
             hedefIndex = 0;
             Konum = yolNoktalari[0];
+
             Can = baslangicCan;
+            MaksCan = baslangicCan;
+
             Hiz = hiz;
             hedefeUlasti = false;
+
+            this.baslangicGecikmeTicks = baslangicGecikmeTicks;
         }
 
-        /// <summary>
-        /// Her oyun tick'inde çağrılacak: düşmanı bir sonraki yol noktasına doğru hareket ettirir.
-        /// </summary>
+        // Her oyun tick'inde çağrılacak: düşmanı bir sonraki yol noktasına doğru hareket ettirir.
         public void Guncelle()
         {
             if (hedefeUlasti || Can <= 0)
                 return;
 
+            // Spawn gecikmesi
+            if (baslangicGecikmeTicks > 0)
+            {
+                baslangicGecikmeTicks--;
+                return;
+            }
+
             if (hedefIndex >= yolNoktalari.Count - 1)
             {
-                // Artık son noktadayız
                 hedefeUlasti = true;
                 return;
             }
 
             Point hedefNokta = yolNoktalari[hedefIndex + 1];
 
-            // Hedef noktanın yön vektörünü hesapla
             float dx = hedefNokta.X - Konum.X;
             float dy = hedefNokta.Y - Konum.Y;
             float mesafe = (float)Math.Sqrt(dx * dx + dy * dy);
 
-            if (mesafe < 0.1f)
+            // Köşe takılma fix: bir adımda ulaşabiliyorsan hedefe "yapıştır"
+            if (mesafe <= Hiz)
             {
-                // Hedef noktaya çok yaklaştıysak bir sonraki noktaya geç
+                Konum = new PointF(hedefNokta.X, hedefNokta.Y);
                 hedefIndex++;
+
                 if (hedefIndex >= yolNoktalari.Count - 1)
                     hedefeUlasti = true;
 
                 return;
             }
 
-            // Normalize et ve hızla çarp
             float nx = dx / mesafe;
             float ny = dy / mesafe;
 
-            Konum = new PointF(
-                Konum.X + nx * Hiz,
-                Konum.Y + ny * Hiz
-            );
+            Konum = new PointF(Konum.X + nx * Hiz, Konum.Y + ny * Hiz);
         }
 
-        /// <summary>
-        /// Kuleler bu metodu kullanarak hasar verir.
-        /// </summary>
+        // Kuleler bu metodu kullanarak hasar verir.
+
         public void HasarAl(int miktar)
         {
             if (miktar <= 0 || Can <= 0)
@@ -90,9 +100,9 @@ namespace KuleSavunmaOyunu.Entities
                 Can = 0;
         }
 
-        /// <summary>
-        /// Verilen bir noktaya olan uzaklığı döner (kule menzil hesabı için).
-        /// </summary>
+        
+       // Verilen bir noktaya olan uzaklığı döner (kule menzil hesabı için).
+        
         public float Mesafe(Point p)
         {
             float dx = Konum.X - p.X;

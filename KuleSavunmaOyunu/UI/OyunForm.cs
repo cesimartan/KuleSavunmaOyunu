@@ -61,11 +61,19 @@ namespace KuleSavunmaOyunu.UI
 
             var noktalar = new List<Point>
             {
-                new Point(50, yukseklik / 4),
-                new Point(genislik / 2, yukseklik / 4),
-                new Point(genislik / 2, yukseklik - 150),
-                new Point(genislik - 50, yukseklik - 150)
-            };
+    // Kenarlardan pay býrakýyoruz
+    new Point(60,  yukseklik / 5),
+    new Point(genislik - 60, yukseklik / 5),
+
+    new Point(genislik - 60, yukseklik * 2 / 5),
+    new Point(200, yukseklik * 2 / 5),
+
+    new Point(200, yukseklik * 3 / 5),
+    new Point(genislik - 200, yukseklik * 3 / 5),
+
+    new Point(genislik - 200, yukseklik - 70),
+    new Point(genislik - 60, yukseklik - 70),
+};
 
             var yol = new Yol(noktalar);
 
@@ -172,6 +180,16 @@ namespace KuleSavunmaOyunu.UI
         }
 
         private void lblDurum_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAltin_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblCan_Click(object sender, EventArgs e)
         {
 
         }

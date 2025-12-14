@@ -3,6 +3,8 @@ using System.Drawing;
 using KuleSavunmaOyunu.Core;
 using KuleSavunmaOyunu.Entities;
 using KuleSavunmaOyunu.Game;
+using System.Drawing.Drawing2D;
+
 
 namespace KuleSavunmaOyunu.Rendering
 {
@@ -27,11 +29,29 @@ namespace KuleSavunmaOyunu.Rendering
             if (noktalar == null || noktalar.Count < 2)
                 return;
 
-            using (var kalem = new Pen(Color.SaddleBrown, 20))
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            var pts = new List<Point>(noktalar).ToArray();
+
+            // Dış hat
+            using (var disKalem = new Pen(Color.FromArgb(120, 60, 20), 26))
             {
-                g.DrawLines(kalem, new List<Point>(noktalar).ToArray());
+                disKalem.StartCap = LineCap.Round;
+                disKalem.EndCap = LineCap.Round;
+                disKalem.LineJoin = LineJoin.Round;
+                g.DrawLines(disKalem, pts);
+            }
+
+            // İç yol rengi
+            using (var icKalem = new Pen(Color.SaddleBrown, 18))
+            {
+                icKalem.StartCap = LineCap.Round;
+                icKalem.EndCap = LineCap.Round;
+                icKalem.LineJoin = LineJoin.Round;
+                g.DrawLines(icKalem, pts);
             }
         }
+
 
         private void CizKuleler(Graphics g, List<Kule> kuleler)
         {
@@ -89,7 +109,7 @@ namespace KuleSavunmaOyunu.Rendering
                 }
 
                 // Can barı
-                float canOrani = d.Can / 100f; // max can 100 varsayımı, istersen düzenleriz
+                float canOrani = d.MaksCan > 0 ? d.Can / (float)d.MaksCan : 0f;
                 if (canOrani < 0) canOrani = 0;
                 if (canOrani > 1) canOrani = 1;
 
