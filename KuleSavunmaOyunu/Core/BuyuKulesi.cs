@@ -21,7 +21,7 @@ namespace KuleSavunmaOyunu.Core
                 return;
 
             var hedefler = dusmanlar
-                .Where(d => d.Can > 0 && MenziIcindemi(d))
+                .Where(d => d.Can > 0 && d.Aktif && MenziIcindemi(d))
                 .OrderBy(d => d.Mesafe(Konum))
                 .Take(5)
                 .ToList();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KuleSavunmaOyunu.Entities;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using KuleSavunmaOyunu.Entities;
@@ -15,6 +16,9 @@ namespace KuleSavunmaOyunu.Core
 
         private Point konum;
         protected DateTime sonSaldiriZamani;
+
+        // Yol referansı (Oyun yöneticisi tarafından atanır)
+        public Yol Yol { get; set; }
 
         public Point Konum
         {

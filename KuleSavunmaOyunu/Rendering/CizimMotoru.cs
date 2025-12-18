@@ -4,6 +4,7 @@ using KuleSavunmaOyunu.Core;
 using KuleSavunmaOyunu.Entities;
 using KuleSavunmaOyunu.Game;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 
 namespace KuleSavunmaOyunu.Rendering
@@ -59,8 +60,11 @@ namespace KuleSavunmaOyunu.Rendering
 
             foreach (var kule in kuleler)
             {
-                // Menzil çemberi
-                using (var menzilKalem = new Pen(Color.FromArgb(80, Color.LightBlue), 1))
+                // Tipine göre stil
+                var (govdeRenk, menzilRenk) = KuleStilGetir(kule);
+
+                // 1) Menzil çemberi (tipine göre farklı renk)
+                using (var menzilKalem = new Pen(Color.FromArgb(70, menzilRenk), 2))
                 {
                     int r = kule.Menzil;
                     g.DrawEllipse(menzilKalem,
@@ -70,21 +74,81 @@ namespace KuleSavunmaOyunu.Rendering
                         r * 2);
                 }
 
-                // Kule gövdesi (kare)
+                // 2) Gövde
                 Rectangle rect = new Rectangle(
                     kule.Konum.X - kuleBoyut / 2,
                     kule.Konum.Y - kuleBoyut / 2,
                     kuleBoyut,
                     kuleBoyut);
 
-                using (var firca = new SolidBrush(Color.DarkSlateGray))
+                using (var firca = new SolidBrush(govdeRenk))
                 using (var kalem = new Pen(Color.White, 2))
                 {
                     g.FillRectangle(firca, rect);
                     g.DrawRectangle(kalem, rect);
                 }
+
+                // 3) Tip sembolü/ikon (şekil + harf)
+                CizKuleSembolu(g, kule, rect);
             }
         }
+
+        private (Color govde, Color menzil) KuleStilGetir(Kule kule)
+        {
+            if (kule is OkKulesi) return (Color.SteelBlue, Color.LightSkyBlue);
+            if (kule is TopKulesi) return (Color.OrangeRed, Color.Gold);
+            if (kule is BuyuKulesi) return (Color.MediumPurple, Color.Plum);
+
+            return (Color.DarkSlateGray, Color.LightBlue);
+        }
+
+        private void CizKuleSembolu(Graphics g, Kule kule, Rectangle rect)
+        {
+            using var ikonFirca = new SolidBrush(Color.FromArgb(200, Color.White));
+            using var ikonKalem = new Pen(Color.FromArgb(220, Color.White), 2);
+            
+
+            // İç alanda çizim (kenarlardan biraz boşluk)
+            var inner = Rectangle.Inflate(rect, -6, -6);
+
+            if (kule is OkKulesi)
+            {
+                // Üçgen (ok ucu gibi)
+                Point[] tri =
+                {
+            new Point(inner.Left + inner.Width / 2, inner.Top),
+            new Point(inner.Right, inner.Bottom),
+            new Point(inner.Left, inner.Bottom)
+        };
+                g.FillPolygon(ikonFirca, tri);
+
+            }
+            else if (kule is TopKulesi)
+            {
+                // Daire + küçük namlu çizgisi
+                g.FillEllipse(ikonFirca, inner);
+                int cx = inner.Left + inner.Width / 2;
+                g.DrawLine(ikonKalem,
+                    cx, inner.Top + 6,
+                    cx, inner.Top - 6);
+
+
+            }
+            else if (kule is BuyuKulesi)
+            {
+                // Elmas (diamond)
+                Point[] diamond =
+                {
+            new Point(inner.Left + inner.Width / 2, inner.Top),
+            new Point(inner.Right, inner.Top + inner.Height / 2),
+            new Point(inner.Left + inner.Width / 2, inner.Bottom),
+            new Point(inner.Left, inner.Top + inner.Height / 2)
+        };
+                g.FillPolygon(ikonFirca, diamond);
+
+            }
+        }
+
 
         private void CizDusmanlar(Graphics g, List<Dusman> dusmanlar)
         {

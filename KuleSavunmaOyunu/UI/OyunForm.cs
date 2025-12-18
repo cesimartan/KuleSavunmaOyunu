@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using KuleSavunmaOyunu.Game;
-using KuleSavunmaOyunu.Rendering;
 using KuleSavunmaOyunu.Entities;
 using KuleSavunmaOyunu.Enums;
+using KuleSavunmaOyunu.Game;
+using KuleSavunmaOyunu.Rendering;
+using System.Drawing.Drawing2D;
 
 namespace KuleSavunmaOyunu.UI
 {
@@ -34,6 +31,15 @@ namespace KuleSavunmaOyunu.UI
             }
 
             cizimMotoru = new CizimMotoru();
+
+            // Alt paneldeki kule butonlarini kart gibi stillendir (ikon + fiyat)
+            KuleButonlariniStille();
+            KonumlandirKuleButonlari();
+            KuleButonFiyatRozetleriniKur();
+
+            if (panelAlt != null)
+                panelAlt.Resize += (s, e) => KonumlandirKuleButonlari();
+
         }
 
         // Form yüklendiðinde çalýþacak
@@ -55,25 +61,58 @@ namespace KuleSavunmaOyunu.UI
 
         private void YolOlusturVeOyunuBaslat()
         {
+            // Buton fiyatlarini oyundaki degerlerle senkron tut
+            KuleButonMetinleriniGuncelle();
+            KonumlandirKuleButonlari();
+
             // panelOyunAlani'nýn boyutuna göre örnek bir yol
             int genislik = panelOyunAlani.Width;
             int yukseklik = panelOyunAlani.Height;
 
+            int ustY = yukseklik / 5;
+            int ortaY = yukseklik * 2 / 5;
+
+            // Arayý büyütmek için:
+            int ekBosluk = 80;          // 50 px daha aç (istediðin gibi artýr)
+            ortaY += ekBosluk;
+
+            // Kývrýmlý yol için: bazý kontrol noktalarý
+            int pad = 60;
+            int sagX = genislik - pad;
+
+            int y1 = ustY;                          // üst hat
+            int y2 = ortaY;                         // orta hat (ekBosluk uygulanmýþ)
+            int y3 = (int)(yukseklik * 0.62);       // daha aþaðý kývrým
+            int y4 = (int)(yukseklik * 0.82);       // loop altý
+            int y5 = (int)(yukseklik * 0.35);       // sað üst kývrým
+
             var noktalar = new List<Point>
-            {
-    // Kenarlardan pay býrakýyoruz
-    new Point(60,  yukseklik / 5),
-    new Point(genislik - 60, yukseklik / 5),
+{
+    // Sol üstten giriþ -> aþaðý kývrým
+    new Point(pad, y1),
+    new Point((int)(genislik * 0.10), (int)(yukseklik * 0.22)),
+    new Point((int)(genislik * 0.08), y2),
 
-    new Point(genislik - 60, yukseklik * 2 / 5),
-    new Point(200, yukseklik * 2 / 5),
+    // Orta hatta doðru ilerle, küçük "tümsek"
+    new Point((int)(genislik * 0.22), y2),
+    new Point((int)(genislik * 0.30), (int)(yukseklik * 0.40)),
+    new Point((int)(genislik * 0.40), (int)(yukseklik * 0.46)),
+    new Point((int)(genislik * 0.48), (int)(yukseklik * 0.58)),
 
-    new Point(200, yukseklik * 3 / 5),
-    new Point(genislik - 200, yukseklik * 3 / 5),
+    // Büyük alt loop (U gibi)
+    new Point((int)(genislik * 0.52), y3),
+    new Point((int)(genislik * 0.62), y4),
+    new Point((int)(genislik * 0.76), y4),
+    new Point((int)(genislik * 0.80), (int)(yukseklik * 0.62)),
+    new Point((int)(genislik * 0.74), (int)(yukseklik * 0.45)),
 
-    new Point(genislik - 200, yukseklik - 70),
-    new Point(genislik - 60, yukseklik - 70),
+    // Sað üstte kývrýlýp çýkýþa baðla
+    new Point((int)(genislik * 0.66), y5),
+    new Point((int)(genislik * 0.78), (int)(yukseklik * 0.18)),
+    new Point(sagX, (int)(yukseklik * 0.30)),
 };
+
+
 
             var yol = new Yol(noktalar);
 
@@ -86,6 +125,182 @@ namespace KuleSavunmaOyunu.UI
             if (lblDalga != null) lblDalga.Text = oyunYonetici.Dalga.ToString();
             if (lblSkor != null) lblSkor.Text = oyunYonetici.Skor.ToString();
         }
+
+        private void KuleButonlariniStille()
+        {
+            StilVer(btnOkKulesi, KuleTipi.Ok, Color.SteelBlue);
+            StilVer(btnTopKulesi, KuleTipi.Top, Color.OrangeRed);
+            StilVer(btnBuyuKulesi, KuleTipi.Buyu, Color.MediumPurple);
+            if (oyunYonetici == null)
+            {
+                if (btnOkKulesi != null) btnOkKulesi.Text = "Ok Kulesi";
+                if (btnTopKulesi != null) btnTopKulesi.Text = "Top Kulesi";
+                if (btnBuyuKulesi != null) btnBuyuKulesi.Text = "Büyü Kulesi";
+            }
+        }
+
+
+        private void KuleButonMetinleriniGuncelle()
+        {
+            //rozet çiziyoruz
+            if (btnOkKulesi != null) btnOkKulesi.Text = "Ok Kulesi";
+            if (btnTopKulesi != null) btnTopKulesi.Text = "Top Kulesi";
+            if (btnBuyuKulesi != null) btnBuyuKulesi.Text = "Büyü Kulesi";
+
+            btnOkKulesi?.Invalidate();
+            btnTopKulesi?.Invalidate();
+            btnBuyuKulesi?.Invalidate();
+        }
+
+
+        private void KonumlandirKuleButonlari()
+        {
+            if (panelAlt == null || btnOkKulesi == null || btnTopKulesi == null || btnBuyuKulesi == null)
+                return;
+
+            int y = (panelAlt.Height - btnOkKulesi.Height) / 2;
+            int padding = 40;
+
+            btnOkKulesi.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnTopKulesi.Anchor = AnchorStyles.Bottom;
+            btnBuyuKulesi.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+
+            btnOkKulesi.Location = new Point(padding, y);
+            btnTopKulesi.Location = new Point((panelAlt.Width - btnTopKulesi.Width) / 2, y);
+            btnBuyuKulesi.Location = new Point(panelAlt.Width - btnBuyuKulesi.Width - padding, y);
+        }
+
+        private void StilVer(Button btn, KuleTipi tip, Color renk)
+        {
+            if (btn == null) return;
+
+            btn.UseVisualStyleBackColor = false;
+            btn.BackColor = renk;
+            btn.ForeColor = Color.White;
+
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+
+            btn.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+
+            btn.TextImageRelation = TextImageRelation.ImageAboveText;
+            btn.ImageAlign = ContentAlignment.TopCenter;
+            btn.TextAlign = ContentAlignment.BottomCenter;
+
+            btn.Size = new Size(150, 85);
+
+            btn.Padding = new Padding(0, 8, 0, 30);
+
+            btn.Image = KuleIkonuOlustur(tip, 18, 18);
+
+        }
+
+
+        private Image KuleIkonuOlustur(KuleTipi tip, int w, int h)
+        {
+            Bitmap bmp = new Bitmap(w, h);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+            using (Brush b = new SolidBrush(Color.FromArgb(220, Color.White)))
+            using (Pen p = new Pen(Color.FromArgb(240, Color.White), 2))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+                Rectangle r = new Rectangle(2, 2, w - 4, h - 4);
+
+                if (tip == KuleTipi.Ok)
+                {
+                    Point[] tri =
+                    {
+                new Point(r.Left + r.Width / 2, r.Top),
+                new Point(r.Right, r.Bottom),
+                new Point(r.Left, r.Bottom)
+            };
+                    g.FillPolygon(b, tri);
+                }
+                else if (tip == KuleTipi.Top)
+                {
+                    g.FillEllipse(b, r);
+                    g.DrawLine(p, r.Left + r.Width / 2, r.Top, r.Left + r.Width / 2, r.Top - 4);
+                }
+                else if (tip == KuleTipi.Buyu)
+                {
+                    Point[] diamond =
+                    {
+                new Point(r.Left + r.Width / 2, r.Top),
+                new Point(r.Right, r.Top + r.Height / 2),
+                new Point(r.Left + r.Width / 2, r.Bottom),
+                new Point(r.Left, r.Top + r.Height / 2)
+            };
+                    g.FillPolygon(b, diamond);
+                }
+            }
+
+            return bmp;
+        }
+        private void KuleButonFiyatRozetleriniKur()
+        {
+            if (btnOkKulesi != null) btnOkKulesi.Paint += (s, e) => CizFiyatRozeti((Button)s, e.Graphics, KuleTipi.Ok);
+            if (btnTopKulesi != null) btnTopKulesi.Paint += (s, e) => CizFiyatRozeti((Button)s, e.Graphics, KuleTipi.Top);
+            if (btnBuyuKulesi != null) btnBuyuKulesi.Paint += (s, e) => CizFiyatRozeti((Button)s, e.Graphics, KuleTipi.Buyu);
+        }
+
+        private void CizFiyatRozeti(Button btn, Graphics g, KuleTipi tip)
+        {
+            if (oyunYonetici == null) return;
+
+            int fiyat = oyunYonetici.KuleFiyatiGetir(tip);
+            string text = fiyat.ToString();
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            // Rozet fontunu biraz küçültmek daha þýk durur (opsiyonel)
+            using var rozetFont = new Font(btn.Font.FontFamily, btn.Font.Size - 1f, FontStyle.Bold);
+
+            Size t = TextRenderer.MeasureText(g, text, rozetFont, Size.Empty, TextFormatFlags.NoPadding);
+
+            int padX = 10, padY = 6;
+            int w = t.Width + padX * 2;
+            int h = t.Height + padY;
+
+            int x = (btn.ClientSize.Width - w) / 2;
+
+            int badgeAreaTop = btn.ClientSize.Height - btn.Padding.Bottom;
+            int badgeAreaHeight = btn.Padding.Bottom;
+            int y = badgeAreaTop + (badgeAreaHeight - h) / 2;
+
+
+            Rectangle r = new Rectangle(x, y, w, h);
+
+            bool yetiyor = oyunYonetici.Altin >= fiyat;
+            Color bg = yetiyor ? Color.FromArgb(230, Color.White) : Color.FromArgb(120, Color.White);
+            Color fg = Color.Black;
+
+            using (var path = YuvarlakDikdortgen(r, 10))
+            using (var b = new SolidBrush(bg))
+            using (var p = new Pen(Color.FromArgb(80, Color.Black), 1))
+            {
+                g.FillPath(b, path);
+                g.DrawPath(p, path);
+            }
+
+            TextRenderer.DrawText(g, text, rozetFont, r, fg,
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
+        }
+
+
+        private GraphicsPath YuvarlakDikdortgen(Rectangle r, int radius)
+        {
+            int d = radius * 2;
+            var path = new GraphicsPath();
+            path.AddArc(r.X, r.Y, d, d, 180, 90);
+            path.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            path.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            path.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
 
         // OYUN ALANI ÇÝZÝMÝ
         private void panelOyunAlani_Paint(object sender, PaintEventArgs e)
@@ -114,7 +329,13 @@ namespace KuleSavunmaOyunu.UI
             if (!basarili)
             {
                 if (lblDurum != null)
-                    lblDurum.Text = "Kule yerleþtirilemedi (yetersiz altýn veya çok yakýn).";
+                {
+                    // Eðer maksimum kule sayýsýna ulaþýldýysa, kullanýcýya açýkça belirt
+                    if (oyunYonetici.Kuleler.Count >= oyunYonetici.MaksimumKuleSayisi)
+                        lblDurum.Text = $"Maksimum kule sayýsýna ulaþýldý ({oyunYonetici.MaksimumKuleSayisi}).";
+                    else
+                        lblDurum.Text = "Kule yerleþtirilemedi (yetersiz altýn, çok yakýn ya da yol üzerinde).";
+                }
             }
             else
             {
@@ -176,6 +397,10 @@ namespace KuleSavunmaOyunu.UI
             }
 
             // Oyun alanýný yeniden çiz
+            btnOkKulesi?.Invalidate();
+            btnTopKulesi?.Invalidate();
+            btnBuyuKulesi?.Invalidate();
+
             panelOyunAlani.Invalidate();
         }
 

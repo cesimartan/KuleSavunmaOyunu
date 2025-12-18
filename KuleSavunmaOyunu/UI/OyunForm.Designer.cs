@@ -48,9 +48,6 @@ namespace KuleSavunmaOyunu.UI
             btnOkKulesi = new Button();
             panelOyunAlani = new Panel();
             timerOyun = new System.Windows.Forms.Timer(components);
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
             panelUst.SuspendLayout();
             panelAlt.SuspendLayout();
             SuspendLayout();
@@ -70,7 +67,7 @@ namespace KuleSavunmaOyunu.UI
             panelUst.Dock = DockStyle.Top;
             panelUst.Location = new Point(0, 0);
             panelUst.Name = "panelUst";
-            panelUst.Size = new Size(1205, 60);
+            panelUst.Size = new Size(1131, 60);
             panelUst.TabIndex = 0;
             // 
             // lblSkorBaslik
@@ -118,7 +115,7 @@ namespace KuleSavunmaOyunu.UI
             lblDurum.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblDurum.AutoSize = true;
             lblDurum.ForeColor = Color.White;
-            lblDurum.Location = new Point(1034, 22);
+            lblDurum.Location = new Point(960, 22);
             lblDurum.Name = "lblDurum";
             lblDurum.Size = new Size(54, 20);
             lblDurum.TabIndex = 4;
@@ -166,25 +163,22 @@ namespace KuleSavunmaOyunu.UI
             // panelAlt
             // 
             panelAlt.BackColor = SystemColors.ControlDark;
-            panelAlt.Controls.Add(label3);
-            panelAlt.Controls.Add(label2);
-            panelAlt.Controls.Add(label1);
             panelAlt.Controls.Add(btnBuyuKulesi);
             panelAlt.Controls.Add(btnTopKulesi);
             panelAlt.Controls.Add(btnOkKulesi);
             panelAlt.Dock = DockStyle.Bottom;
-            panelAlt.Location = new Point(0, 608);
+            panelAlt.Location = new Point(0, 640);
             panelAlt.Name = "panelAlt";
-            panelAlt.Size = new Size(1205, 100);
+            panelAlt.Size = new Size(1131, 100);
             panelAlt.TabIndex = 1;
             panelAlt.Paint += panelAlt_Paint;
             // 
             // btnBuyuKulesi
             // 
             btnBuyuKulesi.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnBuyuKulesi.Location = new Point(662, 37);
+            btnBuyuKulesi.Location = new Point(662, 20);
             btnBuyuKulesi.Name = "btnBuyuKulesi";
-            btnBuyuKulesi.Size = new Size(94, 29);
+            btnBuyuKulesi.Size = new Size(94, 46);
             btnBuyuKulesi.TabIndex = 2;
             btnBuyuKulesi.Text = "Büyü Kulesi";
             btnBuyuKulesi.UseVisualStyleBackColor = true;
@@ -193,9 +187,9 @@ namespace KuleSavunmaOyunu.UI
             // btnTopKulesi
             // 
             btnTopKulesi.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnTopKulesi.Location = new Point(395, 37);
+            btnTopKulesi.Location = new Point(395, 20);
             btnTopKulesi.Name = "btnTopKulesi";
-            btnTopKulesi.Size = new Size(94, 29);
+            btnTopKulesi.Size = new Size(94, 46);
             btnTopKulesi.TabIndex = 1;
             btnTopKulesi.Text = "Top Kulesi";
             btnTopKulesi.UseVisualStyleBackColor = true;
@@ -204,9 +198,9 @@ namespace KuleSavunmaOyunu.UI
             // btnOkKulesi
             // 
             btnOkKulesi.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnOkKulesi.Location = new Point(105, 37);
+            btnOkKulesi.Location = new Point(105, 20);
             btnOkKulesi.Name = "btnOkKulesi";
-            btnOkKulesi.Size = new Size(94, 29);
+            btnOkKulesi.Size = new Size(94, 46);
             btnOkKulesi.TabIndex = 0;
             btnOkKulesi.Text = "Ok Kulesi";
             btnOkKulesi.UseVisualStyleBackColor = true;
@@ -218,7 +212,7 @@ namespace KuleSavunmaOyunu.UI
             panelOyunAlani.Dock = DockStyle.Fill;
             panelOyunAlani.Location = new Point(0, 60);
             panelOyunAlani.Name = "panelOyunAlani";
-            panelOyunAlani.Size = new Size(1205, 548);
+            panelOyunAlani.Size = new Size(1131, 580);
             panelOyunAlani.TabIndex = 2;
             panelOyunAlani.Paint += panelOyunAlani_Paint;
             panelOyunAlani.MouseClick += panelOyunAlani_MouseClick;
@@ -229,41 +223,11 @@ namespace KuleSavunmaOyunu.UI
             timerOyun.Interval = 30;
             timerOyun.Tick += timerOyun_Tick;
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(126, 16);
-            label1.Name = "label1";
-            label1.Size = new Size(35, 18);
-            label1.TabIndex = 6;
-            label1.Text = "100";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label2.Location = new Point(418, 16);
-            label2.Name = "label2";
-            label2.Size = new Size(35, 18);
-            label2.TabIndex = 7;
-            label2.Text = "250";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Stencil", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label3.Location = new Point(679, 16);
-            label3.Name = "label3";
-            label3.Size = new Size(35, 18);
-            label3.TabIndex = 8;
-            label3.Text = "200";
-            // 
             // OyunForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1205, 708);
+            ClientSize = new Size(1131, 740);
             Controls.Add(panelOyunAlani);
             Controls.Add(panelAlt);
             Controls.Add(panelUst);
@@ -276,7 +240,6 @@ namespace KuleSavunmaOyunu.UI
             panelUst.ResumeLayout(false);
             panelUst.PerformLayout();
             panelAlt.ResumeLayout(false);
-            panelAlt.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -298,8 +261,5 @@ namespace KuleSavunmaOyunu.UI
         private Label lblDalgaBaslik;
         private Label lblCanBaslik;
         private Label lblAltinBaslik;
-        private Label label3;
-        private Label label2;
-        private Label label1;
     }
 }

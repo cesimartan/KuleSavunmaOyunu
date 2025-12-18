@@ -9,7 +9,7 @@ namespace KuleSavunmaOyunu.Core
     {
         public TopKulesi(Point konum) : base(konum)
         {
-            hasar = 50;
+            hasar = 30;
             menzil = 120;
             hiz = 0.33;   // yakl. 3 saniyede 1 atış (1/0.33 ≈ 3 sn)
             fiyat = 250;
@@ -21,7 +21,7 @@ namespace KuleSavunmaOyunu.Core
                 return;
 
             var hedefler = dusmanlar
-                .Where(d => d.Can > 0 && MenziIcindemi(d))
+                .Where(d => d.Can > 0 && d.Aktif && MenziIcindemi(d))
                 .ToList();
 
             if (!hedefler.Any())

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System;
 using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Game
@@ -11,11 +12,11 @@ namespace KuleSavunmaOyunu.Game
 
         // Temel ayarlar
         private readonly int temelDusmanSayisi = 8;
-        private readonly int dusmanSayisiArtis = 3;
-        private readonly int temelCan = 40;
-        private readonly int canArtis = 10;
+        private readonly int dusmanSayisiArtis = 4;
+        private readonly int temelCan = 60;
+        private readonly int canArtis = 20;
         private readonly float temelHiz = 1.2f;
-        private readonly float hizArtis = 0.1f;
+        private readonly float hizArtis = 0.2f;
 
         public DalgaYonetici()
         {
@@ -29,12 +30,11 @@ namespace KuleSavunmaOyunu.Game
             MevcutDalga++;
 
             int dusmanSayisi = temelDusmanSayisi + (MevcutDalga - 1) * dusmanSayisiArtis;
-            int dusmanCan = temelCan + (MevcutDalga - 1) * canArtis;
-            float dusmanHiz = temelHiz + (MevcutDalga - 1) * hizArtis;
-
+            int dusmanCan = (int)(temelCan * Math.Pow(1.20, MevcutDalga - 1));
+            float dusmanHiz = (float)(temelHiz * Math.Pow(1.08, MevcutDalga - 1));
             var liste = new List<Dusman>();
 
-            int spawnAraligiTicks = 10; // timer 30ms ise ~0.3sn
+            int spawnAraligiTicks = 25; // timer 30ms ise ~0.3sn
 
             for (int i = 0; i < dusmanSayisi; i++)
             {
