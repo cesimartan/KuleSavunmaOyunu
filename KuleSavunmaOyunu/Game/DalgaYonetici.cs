@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System;
-using KuleSavunmaOyunu.Entities;
+﻿using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Game
 {
@@ -13,7 +10,7 @@ namespace KuleSavunmaOyunu.Game
         // Temel ayarlar
         private readonly int temelDusmanSayisi = 8;
         private readonly int dusmanSayisiArtis = 4;
-        private readonly int temelCan = 60;
+        private readonly int temelCan = 80;
         private readonly int canArtis = 20;
         private readonly float temelHiz = 1.2f;
         private readonly float hizArtis = 0.2f;

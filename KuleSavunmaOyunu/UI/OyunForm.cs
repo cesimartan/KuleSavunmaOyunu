@@ -61,70 +61,51 @@ namespace KuleSavunmaOyunu.UI
 
         private void YolOlusturVeOyunuBaslat()
         {
-            // Buton fiyatlarini oyundaki degerlerle senkron tut
-            KuleButonMetinleriniGuncelle();
-            KonumlandirKuleButonlari();
+            int w = panelOyunAlani.Width;
+            int h = panelOyunAlani.Height;
 
-            // panelOyunAlani'nýn boyutuna göre örnek bir yol
-            int genislik = panelOyunAlani.Width;
-            int yukseklik = panelOyunAlani.Height;
+            // Kenarlardan pay
+            int margin = 60;
 
-            int ustY = yukseklik / 5;
-            int ortaY = yukseklik * 2 / 5;
+            // Güzergâhý oranlarla belirleyelim (panel boyutu deðiþse bile bozulmasýn)
+            int yOrta = (int)(h * 0.45);  // soldan giriþ yüksekliði
+            int yUst = (int)(h * 0.12);  // büyük U'nun tepe çizgisi
+            int yAlt = (int)(h * 0.92);  // alt yatay (çok aþaðý deðmesin)
+            int ySagUst = (int)(h * 0.55);  // saðdaki küçük U'nun üst çizgisi
 
-            // Arayý büyütmek için:
-            int ekBosluk = 80;          // 50 px daha aç (istediðin gibi artýr)
-            ortaY += ekBosluk;
-
-            // Kývrýmlý yol için: bazý kontrol noktalarý
-            int pad = 60;
-            int sagX = genislik - pad;
-
-            int y1 = ustY;                          // üst hat
-            int y2 = ortaY;                         // orta hat (ekBosluk uygulanmýþ)
-            int y3 = (int)(yukseklik * 0.62);       // daha aþaðý kývrým
-            int y4 = (int)(yukseklik * 0.82);       // loop altý
-            int y5 = (int)(yukseklik * 0.35);       // sað üst kývrým
+            int xSolDonus = (int)(w * 0.25);  // soldaki büyük dönüþün x'i
+            int xOrtaDikey = (int)(w * 0.62);  // ortadaki uzun dikey iniþ
+            int xSagU = (int)(w * 0.78);  // saðdaki küçük U'nun sol dikeyi
 
             var noktalar = new List<Point>
-{
-    // Sol üstten giriþ -> aþaðý kývrým
-    new Point(pad, y1),
-    new Point((int)(genislik * 0.10), (int)(yukseklik * 0.22)),
-    new Point((int)(genislik * 0.08), y2),
+    {
+        // Soldan giriþ (yOrta)
+        new Point(margin, yOrta),
+        new Point(xSolDonus, yOrta),
 
-    // Orta hatta doðru ilerle, küçük "tümsek"
-    new Point((int)(genislik * 0.22), y2),
-    new Point((int)(genislik * 0.30), (int)(yukseklik * 0.40)),
-    new Point((int)(genislik * 0.40), (int)(yukseklik * 0.46)),
-    new Point((int)(genislik * 0.48), (int)(yukseklik * 0.58)),
+        // Büyük U: yukarý çýk, saða git, aþaðý in
+        new Point(xSolDonus, yUst),
+        new Point(xOrtaDikey, yUst),
+        new Point(xOrtaDikey, yAlt),
 
-    // Büyük alt loop (U gibi)
-    new Point((int)(genislik * 0.52), y3),
-    new Point((int)(genislik * 0.62), y4),
-    new Point((int)(genislik * 0.76), y4),
-    new Point((int)(genislik * 0.80), (int)(yukseklik * 0.62)),
-    new Point((int)(genislik * 0.74), (int)(yukseklik * 0.45)),
+        // Alttan saða ilerle
+        new Point(xSagU, yAlt),
 
-    // Sað üstte kývrýlýp çýkýþa baðla
-    new Point((int)(genislik * 0.66), y5),
-    new Point((int)(genislik * 0.78), (int)(yukseklik * 0.18)),
-    new Point(sagX, (int)(yukseklik * 0.30)),
-};
-
-
+        // Saðdaki küçük U: yukarý çýk ve saðdan çýkýþ yap
+        new Point(xSagU, ySagUst),
+        new Point(w - margin, ySagUst)
+    };
 
             var yol = new Yol(noktalar);
-
             oyunYonetici = new OyunYonetici(yol);
-            oyunYonetici.YeniDalgaBaslat(); // Ýlk dalgayý baþlat
+            oyunYonetici.YeniDalgaBaslat();
 
-            // Baþlangýç deðerlerini label'lara yaz
             if (lblAltin != null) lblAltin.Text = oyunYonetici.Altin.ToString();
             if (lblCan != null) lblCan.Text = oyunYonetici.Can.ToString();
             if (lblDalga != null) lblDalga.Text = oyunYonetici.Dalga.ToString();
             if (lblSkor != null) lblSkor.Text = oyunYonetici.Skor.ToString();
         }
+
 
         private void KuleButonlariniStille()
         {
@@ -334,7 +315,7 @@ namespace KuleSavunmaOyunu.UI
                     if (oyunYonetici.Kuleler.Count >= oyunYonetici.MaksimumKuleSayisi)
                         lblDurum.Text = $"Maksimum kule sayýsýna ulaþýldý ({oyunYonetici.MaksimumKuleSayisi}).";
                     else
-                        lblDurum.Text = "Kule yerleþtirilemedi (yetersiz altýn, çok yakýn ya da yol üzerinde).";
+                        lblDurum.Text = "Kule yerleþtirilemedi.";
                 }
             }
             else
@@ -405,16 +386,6 @@ namespace KuleSavunmaOyunu.UI
         }
 
         private void lblDurum_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblAltin_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblCan_Click(object sender, EventArgs e)
         {
 
         }

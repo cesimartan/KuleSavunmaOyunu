@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using KuleSavunmaOyunu.Core;
+﻿using KuleSavunmaOyunu.Core;
 using KuleSavunmaOyunu.Entities;
 using KuleSavunmaOyunu.Game;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 
 
 namespace KuleSavunmaOyunu.Rendering
@@ -51,8 +48,26 @@ namespace KuleSavunmaOyunu.Rendering
                 icKalem.LineJoin = LineJoin.Round;
                 g.DrawLines(icKalem, pts);
             }
-        }
 
+            // Başlangıç (yeşil) ve bitiş (kırmızı) noktaları
+            Point baslangic = noktalar[0];
+            Point bitis = noktalar[noktalar.Count - 1];
+
+            CizIsaretNoktasi(g, baslangic, Color.LimeGreen);
+            CizIsaretNoktasi(g, bitis, Color.Red);
+        }
+        private void CizIsaretNoktasi(Graphics g, Point p, Color renk)
+        {
+            int r = 15; // nokta yarıçapı (istersen 8/12 yap)
+            var rect = new Rectangle(p.X - r, p.Y - r, r * 2, r * 2);
+
+            using (var firca = new SolidBrush(renk))
+            using (var kalem = new Pen(Color.White, 2))
+            {
+                g.FillEllipse(firca, rect);
+                g.DrawEllipse(kalem, rect);
+            }
+        }
 
         private void CizKuleler(Graphics g, List<Kule> kuleler)
         {

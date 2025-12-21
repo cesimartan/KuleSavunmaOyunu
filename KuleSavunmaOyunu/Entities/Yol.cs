@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System;
-
-namespace KuleSavunmaOyunu.Entities
+﻿namespace KuleSavunmaOyunu.Entities
 {
     public class Yol
     {
@@ -10,10 +6,39 @@ namespace KuleSavunmaOyunu.Entities
 
         public IReadOnlyList<Point> Noktalar => noktalar;
 
+        // Parameterless constructor that creates a sensible default route similar to the provided image.
+        public Yol() : this(OlusturVarsayilanNoktalar())
+        {
+        }
+
         public Yol(List<Point> noktalar)
         {
             this.noktalar = noktalar ?? new List<Point>();
             HesaplaToplamUzunluk();
+        }
+
+        // Factory helper that returns a Yol using a predefined route.
+        // Adjust coordinates if you need the path to match your canvas size.
+        public static Yol OlusturVarsayilanYol()
+        {
+            return new Yol(OlusturVarsayilanNoktalar());
+        }
+
+        private static List<Point> OlusturVarsayilanNoktalar()
+        {
+            // Coordinates chosen to approximate the winding route in the reference image.
+            // Tweak values to fit your game canvas / form resolution.
+            return new List<Point>
+            {
+                new Point(-40, 260),  // start off-left
+                new Point(120, 260),  // go right
+                new Point(120, 80),   // up
+                new Point(480, 80),   // right (top horizontal)
+                new Point(480, 360),  // down (long vertical)
+                new Point(720, 360),  // right (bottom horizontal)
+                new Point(720, 160),  // up (short vertical)
+                new Point(980, 160)   // exit right
+            };
         }
 
         private double toplamUzunluk;

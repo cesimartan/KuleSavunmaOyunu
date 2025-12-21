@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System;
-using KuleSavunmaOyunu.Core;
+﻿using KuleSavunmaOyunu.Core;
 using KuleSavunmaOyunu.Entities;
 using KuleSavunmaOyunu.Enums;
 
@@ -20,7 +16,7 @@ namespace KuleSavunmaOyunu.Game
         private DateTime sonSpawnZamani = DateTime.MinValue;
 
         private const double DusmanSpawnAraligiSn = 0.6;   // düşmanlar arası mesafe (arttır = daha seyrek)
-        private const double DalgaArasiBeklemeSn = 2.0;    // dalga arası bekleme
+        private const double DalgaArasiBeklemeSn = 1.0;    // dalga arası bekleme
 
         private DateTime? dalgaBittiZamani = null;
 
@@ -41,6 +37,10 @@ namespace KuleSavunmaOyunu.Game
         // Yeni: maksimum kule sayısı
         private const int MaksimumKule = 3;
         public int MaksimumKuleSayisi => MaksimumKule;
+
+        // Yeni: kule merkezleri arasındaki minimum mesafe (piksel)
+        private const int MinKuleMerkezMesafesi = 150;
+        public int MinimumKuleMerkezMesafesi => MinKuleMerkezMesafesi;
 
         public OyunYonetici(Yol yol)
         {
@@ -206,8 +206,8 @@ namespace KuleSavunmaOyunu.Game
             if (Yol != null && YolUzerindeMi(konum))
                 return false;
 
-            // 3) Şimdilik basit tutuyoruz: sadece aynı yere iki kule koyma.
-            int minMesafe = 40; // kuleler arası minimum mesafe (px)
+            // 3) Minimum kule merkezleri arası mesafe kontrolü
+            int minMesafe = MinimumKuleMerkezMesafesi; // merkezler arası minimum mesafe (px)
 
             bool cokYakin = Kuleler
                 .Any(k => Mesafe(k.Konum, konum) < minMesafe);

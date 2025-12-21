@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using KuleSavunmaOyunu.Entities;
+﻿using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Core
 {

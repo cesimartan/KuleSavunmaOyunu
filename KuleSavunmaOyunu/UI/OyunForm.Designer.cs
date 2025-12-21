@@ -67,7 +67,7 @@ namespace KuleSavunmaOyunu.UI
             panelUst.Dock = DockStyle.Top;
             panelUst.Location = new Point(0, 0);
             panelUst.Name = "panelUst";
-            panelUst.Size = new Size(1131, 60);
+            panelUst.Size = new Size(1037, 60);
             panelUst.TabIndex = 0;
             // 
             // lblSkorBaslik
@@ -115,7 +115,7 @@ namespace KuleSavunmaOyunu.UI
             lblDurum.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblDurum.AutoSize = true;
             lblDurum.ForeColor = Color.White;
-            lblDurum.Location = new Point(960, 22);
+            lblDurum.Location = new Point(944, 22);
             lblDurum.Name = "lblDurum";
             lblDurum.Size = new Size(54, 20);
             lblDurum.TabIndex = 4;
@@ -148,7 +148,6 @@ namespace KuleSavunmaOyunu.UI
             lblCan.Size = new Size(34, 20);
             lblCan.TabIndex = 1;
             lblCan.Text = "Can";
-            lblCan.Click += lblCan_Click;
             // 
             // lblAltin
             // 
@@ -158,7 +157,6 @@ namespace KuleSavunmaOyunu.UI
             lblAltin.Size = new Size(40, 20);
             lblAltin.TabIndex = 0;
             lblAltin.Text = "Altın";
-            lblAltin.Click += lblAltin_Click;
             // 
             // panelAlt
             // 
@@ -167,9 +165,9 @@ namespace KuleSavunmaOyunu.UI
             panelAlt.Controls.Add(btnTopKulesi);
             panelAlt.Controls.Add(btnOkKulesi);
             panelAlt.Dock = DockStyle.Bottom;
-            panelAlt.Location = new Point(0, 640);
+            panelAlt.Location = new Point(0, 474);
             panelAlt.Name = "panelAlt";
-            panelAlt.Size = new Size(1131, 100);
+            panelAlt.Size = new Size(1037, 100);
             panelAlt.TabIndex = 1;
             panelAlt.Paint += panelAlt_Paint;
             // 
@@ -212,7 +210,7 @@ namespace KuleSavunmaOyunu.UI
             panelOyunAlani.Dock = DockStyle.Fill;
             panelOyunAlani.Location = new Point(0, 60);
             panelOyunAlani.Name = "panelOyunAlani";
-            panelOyunAlani.Size = new Size(1131, 580);
+            panelOyunAlani.Size = new Size(1037, 414);
             panelOyunAlani.TabIndex = 2;
             panelOyunAlani.Paint += panelOyunAlani_Paint;
             panelOyunAlani.MouseClick += panelOyunAlani_MouseClick;
@@ -227,7 +225,7 @@ namespace KuleSavunmaOyunu.UI
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1131, 740);
+            ClientSize = new Size(1037, 574);
             Controls.Add(panelOyunAlani);
             Controls.Add(panelAlt);
             Controls.Add(panelUst);

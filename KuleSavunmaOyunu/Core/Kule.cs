@@ -1,8 +1,4 @@
 ﻿using KuleSavunmaOyunu.Entities;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Core
 {

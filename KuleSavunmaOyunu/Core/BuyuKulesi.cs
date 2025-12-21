@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using KuleSavunmaOyunu.Entities;
+﻿using KuleSavunmaOyunu.Entities;
 
 namespace KuleSavunmaOyunu.Core
 {
@@ -10,7 +7,7 @@ namespace KuleSavunmaOyunu.Core
         public BuyuKulesi(Point konum) : base(konum)
         {
             hasar = 25;
-            menzil = 130;
+            menzil = 80;
             hiz = 0.66;   // yaklaşık 1.5 sn'de 1 atış (1/0.66 ≈ 1.5)
             fiyat = 200;
         }

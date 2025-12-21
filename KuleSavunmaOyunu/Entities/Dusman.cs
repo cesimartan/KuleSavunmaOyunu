@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-
-namespace KuleSavunmaOyunu.Entities
+﻿namespace KuleSavunmaOyunu.Entities
 {
     public class Dusman
     {
@@ -70,7 +66,7 @@ namespace KuleSavunmaOyunu.Entities
             float dy = hedefNokta.Y - Konum.Y;
             float mesafe = (float)Math.Sqrt(dx * dx + dy * dy);
 
-            // Köşe takılma fix: bir adımda ulaşabiliyorsan hedefe "yapıştır"
+            // Köşe takılma fix
             if (mesafe <= Hiz)
             {
                 Konum = new PointF(hedefNokta.X, hedefNokta.Y);
