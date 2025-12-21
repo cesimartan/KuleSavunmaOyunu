@@ -9,18 +9,18 @@ namespace KuleSavunmaOyunu.UI
     public partial class OyunForm : Form
     {
         // OYUN ALANI ÝÇÝN ALANLAR
-        private OyunYonetici oyunYonetici;
-        private CizimMotoru cizimMotoru;
-        private KuleTipi? seciliKuleTipi = null;
+        private OyunYonetici oyunYonetici; // oyun mantýðý yöneticisi
+        private CizimMotoru cizimMotoru; // çizim yardýmcý sýnýfý
+        private KuleTipi? seciliKuleTipi = null; // kullanýcý tarafýndan seçilen kule tipi
 
         public OyunForm()
         {
             InitializeComponent();
 
-            // Form'un kendisinde flicker azaltma
+            // Form'da titremeyi azalt
             this.DoubleBuffered = true;
 
-            // panelOyunAlani için DoubleBuffered açýyoruz (reflection ile)
+            // panelOyunAlani için DoubleBuffered (reflection ile eriþim)
             if (panelOyunAlani != null)
             {
                 panelOyunAlani.GetType()
@@ -32,7 +32,7 @@ namespace KuleSavunmaOyunu.UI
 
             cizimMotoru = new CizimMotoru();
 
-            // Alt paneldeki kule butonlarini kart gibi stillendir (ikon + fiyat)
+            // Alt paneldeki kule butonlarýný stilize et, konumlandýr ve fiyat rozetlerini hazýrla
             KuleButonlariniStille();
             KonumlandirKuleButonlari();
             KuleButonFiyatRozetleriniKur();
@@ -42,16 +42,16 @@ namespace KuleSavunmaOyunu.UI
 
         }
 
-        // Form yüklendiðinde çalýþacak
+        // Form yüklendiðinde oyun kurulumu ve timer baþlatma
         private void OyunForm_Load(object sender, EventArgs e)
         {
-            // Yol oluþtur ve oyun yöneticisini baþlat
+            // Yol oluþturup oyunu baþlat
             YolOlusturVeOyunuBaslat();
 
-            // Timer ayarlarý (Designer'da Enabled=false ise buradan baþlatýr)
+            // Timer ayarla ve çalýþtýr
             if (timerOyun != null)
             {
-                timerOyun.Interval = 30; // ~33 FPS
+                timerOyun.Interval = 30; // yaklaþýk 33 FPS
                 timerOyun.Start();
             }
 
@@ -59,6 +59,7 @@ namespace KuleSavunmaOyunu.UI
                 lblDurum.Text = "Oyun baþladý. Kule seçip oyun alanýna týkla.";
         }
 
+        // Panel boyutlarýna göre yol noktalarýný hesaplayýp oyunu baþlatýr
         private void YolOlusturVeOyunuBaslat()
         {
             int w = panelOyunAlani.Width;
@@ -67,15 +68,15 @@ namespace KuleSavunmaOyunu.UI
             // Kenarlardan pay
             int margin = 60;
 
-            // Güzergâhý oranlarla belirleyelim (panel boyutu deðiþse bile bozulmasýn)
-            int yOrta = (int)(h * 0.45);  // soldan giriþ yüksekliði
-            int yUst = (int)(h * 0.12);  // büyük U'nun tepe çizgisi
-            int yAlt = (int)(h * 0.92);  // alt yatay (çok aþaðý deðmesin)
-            int ySagUst = (int)(h * 0.55);  // saðdaki küçük U'nun üst çizgisi
+            // Güzergahý oranlarla belirle (panel boyutu deðiþse de düzgün kalsýn)
+            int yOrta = (int)(h * 0.45);  // giriþ yüksekliði
+            int yUst = (int)(h * 0.12);   // büyük U tepe
+            int yAlt = (int)(h * 0.92);   // alt yatay
+            int ySagUst = (int)(h * 0.55);// sað küçük U üst
 
-            int xSolDonus = (int)(w * 0.25);  // soldaki büyük dönüþün x'i
-            int xOrtaDikey = (int)(w * 0.62);  // ortadaki uzun dikey iniþ
-            int xSagU = (int)(w * 0.78);  // saðdaki küçük U'nun sol dikeyi
+            int xSolDonus = (int)(w * 0.25);
+            int xOrtaDikey = (int)(w * 0.62);
+            int xSagU = (int)(w * 0.78);
 
             var noktalar = new List<Point>
     {
@@ -123,7 +124,7 @@ namespace KuleSavunmaOyunu.UI
 
         private void KuleButonMetinleriniGuncelle()
         {
-            //rozet çiziyoruz
+            // Buton üzerindeki metinleri güncelle ve yeniden çiz
             if (btnOkKulesi != null) btnOkKulesi.Text = "Ok Kulesi";
             if (btnTopKulesi != null) btnTopKulesi.Text = "Top Kulesi";
             if (btnBuyuKulesi != null) btnBuyuKulesi.Text = "Büyü Kulesi";
@@ -235,7 +236,7 @@ namespace KuleSavunmaOyunu.UI
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
-            // Rozet fontunu biraz küçültmek daha þýk durur (opsiyonel)
+            // Rozet fontunu biraz küçült
             using var rozetFont = new Font(btn.Font.FontFamily, btn.Font.Size - 1f, FontStyle.Bold);
 
             Size t = TextRenderer.MeasureText(g, text, rozetFont, Size.Empty, TextFormatFlags.NoPadding);
@@ -311,7 +312,7 @@ namespace KuleSavunmaOyunu.UI
             {
                 if (lblDurum != null)
                 {
-                    // Eðer maksimum kule sayýsýna ulaþýldýysa, kullanýcýya açýkça belirt
+                    // Maksimum kule sayýsý uyarýsý
                     if (oyunYonetici.Kuleler.Count >= oyunYonetici.MaksimumKuleSayisi)
                         lblDurum.Text = $"Maksimum kule sayýsýna ulaþýldý ({oyunYonetici.MaksimumKuleSayisi}).";
                     else
@@ -350,7 +351,7 @@ namespace KuleSavunmaOyunu.UI
                 lblDurum.Text = "Büyü Kulesi seçildi.";
         }
 
-        // Alt panelin Paint event'i þu an kullanýlmýyor, boþ kalabilir
+        // Alt panelin Paint event'i boþ býrakýldý
         private void panelAlt_Paint(object sender, PaintEventArgs e)
         {
         }
@@ -363,7 +364,7 @@ namespace KuleSavunmaOyunu.UI
 
             oyunYonetici.Guncelle();
 
-            // Label güncellemeleri
+            // UI etiketlerini güncelle
             if (lblAltin != null) lblAltin.Text = oyunYonetici.Altin.ToString();
             if (lblCan != null) lblCan.Text = oyunYonetici.Can.ToString();
             if (lblDalga != null) lblDalga.Text = oyunYonetici.Dalga.ToString();
@@ -377,17 +378,12 @@ namespace KuleSavunmaOyunu.UI
                 MessageBox.Show("Oyun bitti! Skor: " + oyunYonetici.Skor, "Game Over");
             }
 
-            // Oyun alanýný yeniden çiz
+            // Buton rozetlerini ve oyun alanýný yeniden çiz
             btnOkKulesi?.Invalidate();
             btnTopKulesi?.Invalidate();
             btnBuyuKulesi?.Invalidate();
 
             panelOyunAlani.Invalidate();
-        }
-
-        private void lblDurum_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

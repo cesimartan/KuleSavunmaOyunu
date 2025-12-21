@@ -4,9 +4,10 @@
     {
         private readonly List<Point> noktalar;
 
+        // Dışarıya salt okunur liste sunulur
         public IReadOnlyList<Point> Noktalar => noktalar;
 
-        // Parameterless constructor that creates a sensible default route similar to the provided image.
+        // Parametresiz ctor: varsayılan rota oluşturur
         public Yol() : this(OlusturVarsayilanNoktalar())
         {
         }
@@ -17,8 +18,7 @@
             HesaplaToplamUzunluk();
         }
 
-        // Factory helper that returns a Yol using a predefined route.
-        // Adjust coordinates if you need the path to match your canvas size.
+        // Fabrika: ön tanımlı rota döner
         public static Yol OlusturVarsayilanYol()
         {
             return new Yol(OlusturVarsayilanNoktalar());
@@ -26,24 +26,23 @@
 
         private static List<Point> OlusturVarsayilanNoktalar()
         {
-            // Coordinates chosen to approximate the winding route in the reference image.
-            // Tweak values to fit your game canvas / form resolution.
             return new List<Point>
             {
-                new Point(-40, 260),  // start off-left
-                new Point(120, 260),  // go right
-                new Point(120, 80),   // up
-                new Point(480, 80),   // right (top horizontal)
-                new Point(480, 360),  // down (long vertical)
-                new Point(720, 360),  // right (bottom horizontal)
-                new Point(720, 160),  // up (short vertical)
-                new Point(980, 160)   // exit right
+                new Point(-40, 260),
+                new Point(120, 260),
+                new Point(120, 80),
+                new Point(480, 80),
+                new Point(480, 360),
+                new Point(720, 360),
+                new Point(720, 160),
+                new Point(980, 160)
             };
         }
 
         private double toplamUzunluk;
         public double ToplamUzunluk => toplamUzunluk;
 
+        // Toplam yolu parça parça hesaplar.
         private void HesaplaToplamUzunluk()
         {
             toplamUzunluk = 0.0;
@@ -60,18 +59,20 @@
             }
         }
 
+        // Yolun ilk noktası (başlangıç)
         public Point IlkNokta()
         {
             return noktalar.Count > 0 ? noktalar[0] : Point.Empty;
         }
 
+        // Yolun son noktası (çıkış)
         public Point SonNokta()
         {
             return noktalar.Count > 0 ? noktalar[noktalar.Count - 1] : Point.Empty;
         }
 
-        // Returns the distance along the path (from start) of the closest projection
-        // of point p onto the polyline. If path empty, returns 0.
+        // Verilen bir noktaya en yakın projeksiyonun yol üzerinde kaç piksel ileride olduğunu verir.
+        // Eğer rota yoksa 0 döner.
         public double GetClosestDistanceAlongPath(PointF p)
         {
             if (noktalar == null || noktalar.Count < 2)

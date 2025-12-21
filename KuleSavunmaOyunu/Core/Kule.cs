@@ -2,54 +2,59 @@
 
 namespace KuleSavunmaOyunu.Core
 {
+    // Kulelerin ortak davranış ve durumlarını tutan soyut sınıf.
     public abstract class Kule : ISaldirabilir, IYukseltilebilir
     {
-        // Encapsulation: field + property
-        protected int hasar;
-        protected int menzil;
-        protected double hiz;      // saniyede 1 atış için 1.0
-        protected int fiyat;
+        // Temel özellikler (encapsulation için protected alanlar)
+        protected int hasar;                  // bir atışın verdiği hasar
+        protected int menzil;                 // piksel cinsinden etki yarıçapı
+        protected double hiz;                 // saniyedeki atış sayısı (örn. 1.0 => 1 atış/sn)
+        protected int fiyat;                  // oluşturma maliyeti
 
-        private Point konum;
-        protected DateTime sonSaldiriZamani;
+        private Point konum;                  // kule merkezi
+        protected DateTime sonSaldiriZamani;  // son yapılan saldırı zamanı (cooldown kontrolü)
 
-        // Yol referansı (Oyun yöneticisi tarafından atanır)
+        // Oyun yöneticisinin atayacağı yol referansı (kule yol bilgisi kullanabilir)
         public Yol Yol { get; set; }
 
+        // Konum güvenli şekilde okunur; dışarıdan set edilemez.
         public Point Konum
         {
             get { return konum; }
             private set { konum = value; }
         }
 
+        // Salt okunur özellik erişimleri
         public int Hasar => hasar;
         public int Menzil => menzil;
         public double Hiz => hiz;
         public int Fiyat => fiyat;
 
+        // Oluşturucu: konumu ayarlar ve saldırı zamanlayıcısını sıfırlar.
         protected Kule(Point konum)
         {
             Konum = konum;
             sonSaldiriZamani = DateTime.MinValue;
         }
 
-        // Her kule bunu kendine göre override edecek (Polymorphism)
+        // Alt sınıflar tarafından hedeflere saldırı mantığı burada uygulanacak.
         public abstract void Saldir(List<Dusman> dusmanlar);
 
-        // Basit bir yükseltme mantığı – istersen sonra özelleştiririz
+        // Varsayılan yükseltme davranışı: hasar ve menzili artırır. Gerekirse override edilebilir.
         public virtual void Yukselt()
         {
             hasar += 5;
             menzil += 10;
         }
 
-        // Saldırı hızına göre cooldown kontrolü
+        // Saldırı hızı (hiz) bazlı cooldown kontrolü.
+        // Gerekli süre geçtiyse sonSaldiriZamani güncellenir ve true döner.
         protected bool SaldiriHazirMi()
         {
             if (hiz <= 0)
                 return true;
 
-            double gerekenSure = 1.0 / hiz; // ör: hiz = 1 ise 1 sn, hiz = 2 ise 0.5 sn
+            double gerekenSure = 1.0 / hiz; // ör: hiz = 1 => 1s, hiz = 2 => 0.5s
             var gecenSure = (DateTime.Now - sonSaldiriZamani).TotalSeconds;
 
             if (gecenSure >= gerekenSure)
@@ -61,7 +66,7 @@ namespace KuleSavunmaOyunu.Core
             return false;
         }
 
-        // Menzil kontrolü için ortak fonksiyon
+        // Bir düşmanın kule menzili içinde olup olmadığını kontrol eder.
         protected bool MenziIcindemi(Dusman dusman)
         {
             return dusman.Mesafe(Konum) <= menzil;

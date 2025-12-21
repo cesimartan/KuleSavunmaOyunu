@@ -120,7 +120,6 @@ namespace KuleSavunmaOyunu.UI
             lblDurum.Size = new Size(54, 20);
             lblDurum.TabIndex = 4;
             lblDurum.Text = "Durum";
-            lblDurum.Click += lblDurum_Click;
             // 
             // lblSkor
             // 

@@ -6,42 +6,45 @@ namespace KuleSavunmaOyunu.Game
 {
     public class OyunYonetici
     {
+        // Oyundaki kule ve düşman listeleri
         public List<Kule> Kuleler { get; } = new List<Kule>();
         public List<Dusman> Dusmanlar { get; } = new List<Dusman>();
         public Yol Yol { get; }
         public DalgaYonetici DalgaYonetici { get; }
 
-        // Dalga/spawn kontrolü
+        // Spawn kuyrugu ve zamanlayıcı
         private readonly Queue<Dusman> bekleyenDusmanlar = new Queue<Dusman>();
         private DateTime sonSpawnZamani = DateTime.MinValue;
 
-        private const double DusmanSpawnAraligiSn = 0.6;   // düşmanlar arası mesafe (arttır = daha seyrek)
-        private const double DalgaArasiBeklemeSn = 1.0;    // dalga arası bekleme
+        // Zaman ayarları (saniye cinsinden)
+        private const double DusmanSpawnAraligiSn = 0.6;   // düşmanlar arası aralık
+        private const double DalgaArasiBeklemeSn = 1.0;    // dalgalar arası bekleme
 
         private DateTime? dalgaBittiZamani = null;
 
-        // Oyuncu durum bilgileri
+        // Oyuncu durumu
         public int Altin { get; private set; }
         public int Can { get; private set; }
         public int Skor { get; private set; }
 
         public int Dalga => DalgaYonetici.MevcutDalga;
 
-        // Ayarlar
+        // Sabit ayarlar
         private const int BaslangicAltin = 300;
         private const int BaslangicCan = 10;
         private const int DusmanOldurAltin = 20;
         private const int DusmanOldurSkor = 10;
         private const int DusmanGectiCanAzalis = 1;
 
-        // Yeni: maksimum kule sayısı
+        // Maksimum kule sayısı
         private const int MaksimumKule = 3;
         public int MaksimumKuleSayisi => MaksimumKule;
 
-        // Yeni: kule merkezleri arasındaki minimum mesafe (piksel)
+        // Kule merkezleri arası minimum mesafe (px)
         private const int MinKuleMerkezMesafesi = 150;
         public int MinimumKuleMerkezMesafesi => MinKuleMerkezMesafesi;
 
+        // Kurucu: yol referansı ve başlangıç değerleri atanır.
         public OyunYonetici(Yol yol)
         {
             Yol = yol;
@@ -51,12 +54,13 @@ namespace KuleSavunmaOyunu.Game
             Skor = 0;
         }
 
+        // Kuyruktan düşmanları belirli aralıklarla sahaya ekler.
         private void DusmanSpawnEt()
         {
             if (bekleyenDusmanlar.Count == 0)
                 return;
 
-            // İlk spawn hemen gelsin diye sonSpawnZamani MinValue
+            // Spawn aralığı dolmadıysa çık
             if ((DateTime.Now - sonSpawnZamani).TotalSeconds < DusmanSpawnAraligiSn)
                 return;
 
@@ -64,26 +68,27 @@ namespace KuleSavunmaOyunu.Game
             sonSpawnZamani = DateTime.Now;
         }
 
+        // Dalga yönetimi: dalga bittiğinde otomatik yeni dalga başlatma kontrolü.
         private void OtomatikDalgaKontrol()
         {
-            if (Can <= 0) // oyun bittiyse yeni dalga başlatma
+            if (Can <= 0) // oyun bitti ise yeni dalga yok
                 return;
 
-            // Dalga hâlâ sürüyor (aktif düşman var veya spawn kuyruğu dolu)
+            // Hâlâ aktif düşman veya spawn kuyruğu varsa dalga devam ediyor
             if (Dusmanlar.Count > 0 || bekleyenDusmanlar.Count > 0)
             {
                 dalgaBittiZamani = null;
                 return;
             }
 
-            // Dalga yeni bitti: zamanı işaretle
+            // Yeni sona erdi: zamanı işaretle
             if (dalgaBittiZamani == null)
             {
                 dalgaBittiZamani = DateTime.Now;
                 return;
             }
 
-            // Bekleme süresi dolduysa yeni dalga
+            // Bekleme süresi dolduysa yeni dalga başlat
             if ((DateTime.Now - dalgaBittiZamani.Value).TotalSeconds >= DalgaArasiBeklemeSn)
             {
                 YeniDalgaBaslat();
@@ -91,36 +96,33 @@ namespace KuleSavunmaOyunu.Game
             }
         }
 
-        // Timer her Tick olduğunda Form tarafından çağrılacak ana metod.
-
+        // Ana güncelleme: timer tick tarafından çağrılır.
         public void Guncelle()
         {
-            // 0) Bekleyen düşmanları aralıkla sahaya sal
+            // 0) Bekleyen düşmanları spawn et
             DusmanSpawnEt();
 
-            // 1) Düşmanları ilerlet
+            // 1) Düşmanları hareket ettir/güncelle
             DusmanlariGuncelle();
 
             // 2) Kulelerin saldırmasını sağla
             KuleleriSaldirt();
 
-            // 3) Ölen düşmanları temizle, altın & skor ver
+            // 3) Ölen düşmanları işleyip ödül ver
             OldurenleriIsle();
 
-            // 4) Hedefe ulaşan düşmanları kontrol et, can azalt
+            // 4) Hedefe ulaşan düşmanları işle (can azalt)
             GecenleriIsle();
 
-            // 5) Dalga bittiyse otomatik yeni dalga
+            // 5) Dalga kontrolü
             OtomatikDalgaKontrol();
 
-            // Dalga bitti mi? (hiç düşman kalmadıysa) yeni dalga başlat
+            // Eğer sahada hiç düşman yoksa yeni dalga başlat
             if (Can > 0 && Dusmanlar.Count == 0)
                 YeniDalgaBaslat();
         }
 
-
-        // Yeni bir dalga başlatır (listeye yeni düşmanlar ekler).
-
+        // DalgaYonetici'den yeni düşmanlar alıp spawn kuyruğuna ekler.
         public void YeniDalgaBaslat()
         {
             var yeniDusmanlar = DalgaYonetici.YeniDalgaOlustur(Yol);
@@ -130,7 +132,7 @@ namespace KuleSavunmaOyunu.Game
             dalgaBittiZamani = null;
         }
 
-
+        // Her düşmanın Guncelle metodunu çağırır.
         private void DusmanlariGuncelle()
         {
             foreach (var d in Dusmanlar)
@@ -139,6 +141,7 @@ namespace KuleSavunmaOyunu.Game
             }
         }
 
+        // Her kule için hedef listesini ileterek saldırı yaptırır.
         private void KuleleriSaldirt()
         {
             var hedefler = Dusmanlar.Where(d => d.Can > 0 && d.Aktif).ToList();
@@ -149,10 +152,9 @@ namespace KuleSavunmaOyunu.Game
                 k.Saldir(hedefler);
         }
 
-
+        // Ölen düşmanları temizler ve ödül verir.
         private void OldurenleriIsle()
         {
-            // Ölen düşmanları bul
             var olenler = Dusmanlar
                 .Where(d => d.Can <= 0)
                 .ToList();
@@ -168,6 +170,7 @@ namespace KuleSavunmaOyunu.Game
             }
         }
 
+        // Hedefe ulaşan düşmanları işleyip canı azaltır.
         private void GecenleriIsle()
         {
             var gecenler = Dusmanlar
@@ -187,13 +190,11 @@ namespace KuleSavunmaOyunu.Game
                 Can = 0;
         }
 
-
-        // Form'da tıklanan noktaya, seçilen tipte kule koymaya çalışır.
+        // Form üzerinde tıklanan noktaya seçili tipte kule koymaya çalışır.
         // Başarılıysa true döner.
-
         public bool KuleKoy(Point konum, KuleTipi tip)
         {
-            // Yeni: maksimum kule kontrolü
+            // Maksimum kule kontrolü
             if (Kuleler.Count >= MaksimumKule)
                 return false;
 
@@ -202,25 +203,24 @@ namespace KuleSavunmaOyunu.Game
             if (Altin < fiyat)
                 return false;
 
-            // 2) Yolun üstüne kule koymayı engellemek
+            // 2) Yolun üzerinde engelle
             if (Yol != null && YolUzerindeMi(konum))
                 return false;
 
-            // 3) Minimum kule merkezleri arası mesafe kontrolü
-            int minMesafe = MinimumKuleMerkezMesafesi; // merkezler arası minimum mesafe (px)
-
+            // 3) Kuleler arası minimum mesafe kontrolü
+            int minMesafe = MinimumKuleMerkezMesafesi;
             bool cokYakin = Kuleler
                 .Any(k => Mesafe(k.Konum, konum) < minMesafe);
 
             if (cokYakin)
                 return false;
 
-            // 4) Kuleyi oluştur
+            // 4) Kule oluştur ve listeye ekle
             Kule yeniKule = KuleOlustur(tip, konum);
             if (yeniKule == null)
                 return false;
 
-            // Önemli: kuleye oyundaki yolu ata, böylece kule yol-segment kontrolü yapabilir
+            // Kuleye oyundaki yolu ata (kule de yol bilgisine ihtiyaç duyabilir)
             yeniKule.Yol = this.Yol;
 
             Kuleler.Add(yeniKule);
@@ -229,15 +229,15 @@ namespace KuleSavunmaOyunu.Game
             return true;
         }
 
-        // UI gibi katmanlarin fiyati ogrenebilmesi icin guvenli erisim
+        // Harici kodlar için güvenli fiyat sorgulama
         public int KuleFiyatiGetir(KuleTipi tip)
         {
             return KuleFiyati(tip);
         }
 
+        // Kule tipine göre fiyat döner.
         private int KuleFiyati(KuleTipi tip)
         {
-            // Kule sınıflarının içindeki fiyat değerleriyle uyumlu olmasına dikkat et
             switch (tip)
             {
                 case KuleTipi.Ok:
@@ -251,6 +251,7 @@ namespace KuleSavunmaOyunu.Game
             }
         }
 
+        // Tipe göre ilgili kule sınıfını örnekler.
         private Kule KuleOlustur(KuleTipi tip, Point konum)
         {
             switch (tip)
@@ -266,6 +267,7 @@ namespace KuleSavunmaOyunu.Game
             }
         }
 
+        // İki nokta arasındaki öklid mesafesini döner.
         private double Mesafe(Point a, Point b)
         {
             int dx = a.X - b.X;
@@ -273,14 +275,14 @@ namespace KuleSavunmaOyunu.Game
             return System.Math.Sqrt(dx * dx + dy * dy);
         }
 
-        // Yolun çizildiği kalınlığa uygun olarak, tıklanan konumun yol üzerinde olup olmadığını kontrol eder.
+        // Bir noktanın yol polilin üzerindeki herhangi bir segmentine yakın olup olmadığını kontrol eder.
         private bool YolUzerindeMi(Point konum)
         {
             var noktalar = Yol?.Noktalar;
             if (noktalar == null || noktalar.Count < 2)
                 return false;
 
-            // CizimMotoru'da dış hat kalınlığı 26, yani yarıçap ~13 px. Bu değeri kullanıyoruz.
+            // CizimMotoru dış hat kalınlığına göre yarıçap
             const double yolYaricap = 13.0;
 
             for (int i = 0; i < noktalar.Count - 1; i++)
@@ -292,7 +294,7 @@ namespace KuleSavunmaOyunu.Game
             return false;
         }
 
-        // Noktadan doğru parçasına olan en kısa mesafeyi döner.
+        // Noktadan doğru parçasına en yakın uzaklığı hesaplar.
         private double DistancePointToSegment(Point p, Point a, Point b)
         {
             double px = p.X;
@@ -307,7 +309,7 @@ namespace KuleSavunmaOyunu.Game
 
             if (dx == 0 && dy == 0)
             {
-                // a == b
+                // a ve b aynı nokta ise doğrudan uzaklık
                 double ddx = px - ax;
                 double ddy = py - ay;
                 return Math.Sqrt(ddx * ddx + ddy * ddy);
@@ -326,6 +328,7 @@ namespace KuleSavunmaOyunu.Game
             return Math.Sqrt(rx * rx + ry * ry);
         }
 
+        // Oyun bitiş kontrolü
         public bool OyunBittiMi()
         {
             return Can <= 0;

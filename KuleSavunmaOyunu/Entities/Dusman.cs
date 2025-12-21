@@ -1,28 +1,30 @@
 ﻿namespace KuleSavunmaOyunu.Entities
 {
+    // Yol boyunca ilerleyen düşman sınıfı
     public class Dusman
     {
-        // Can bilgisi (Encapsulation)
+        // Can bilgisi (dışarıdan sadece okunur)
         public int Can { get; private set; }
 
-        // Oyun alanındaki konumu
+        // Ekrandaki konum
         public PointF Konum { get; private set; }
 
-        // Hareket hızı (piksel / tick gibi düşünebilirsin)
+        // Hareket hızı (piksel / tick benzeri)
         public float Hiz { get; private set; }
 
-        //başlangıç gecikmesi (tick)
+        // Başlangıç spawn gecikmesi (tick cinsinden)
         private int baslangicGecikmeTicks;
         public bool Aktif => baslangicGecikmeTicks <= 0;
         public int MaksCan { get; private set; }
 
-        // Yol üzerindeki noktalar
+        // Takip edilen yolun noktaları ve hedef index'i
         private readonly List<Point> yolNoktalari;
         private int hedefIndex;
         private bool hedefeUlasti;
 
         public bool HedefeUlasti => hedefeUlasti;
 
+        // Kurucu: yol referansı, can, hız ve spawn gecikmesi alır
         public Dusman(List<Point> yol, int baslangicCan = 50, float hiz = 1.5f, int baslangicGecikmeTicks = 0)
         {
             if (yol == null || yol.Count == 0)
@@ -41,13 +43,13 @@
             this.baslangicGecikmeTicks = baslangicGecikmeTicks;
         }
 
-        // Her oyun tick'inde çağrılacak: düşmanı bir sonraki yol noktasına doğru hareket ettirir.
+        // Her tick çağrılır: düşmanı bir sonraki hedefe doğru hareket ettirir
         public void Guncelle()
         {
             if (hedefeUlasti || Can <= 0)
                 return;
 
-            // Spawn gecikmesi
+            // Spawn gecikmesi devam ediyorsa bekle
             if (baslangicGecikmeTicks > 0)
             {
                 baslangicGecikmeTicks--;
@@ -66,7 +68,7 @@
             float dy = hedefNokta.Y - Konum.Y;
             float mesafe = (float)Math.Sqrt(dx * dx + dy * dy);
 
-            // Köşe takılma fix
+            // Küçük mesafelerde doğrudan hedefe sıçra ve index'i ilerlet
             if (mesafe <= Hiz)
             {
                 Konum = new PointF(hedefNokta.X, hedefNokta.Y);
@@ -78,14 +80,14 @@
                 return;
             }
 
+            // Normale edilmiş yön ile ilerle
             float nx = dx / mesafe;
             float ny = dy / mesafe;
 
             Konum = new PointF(Konum.X + nx * Hiz, Konum.Y + ny * Hiz);
         }
 
-        // Kuleler bu metodu kullanarak hasar verir.
-
+        // Kulelerin uyguladığı hasarı işler
         public void HasarAl(int miktar)
         {
             if (miktar <= 0 || Can <= 0)
@@ -96,9 +98,7 @@
                 Can = 0;
         }
 
-        
-       // Verilen bir noktaya olan uzaklığı döner (kule menzil hesabı için).
-        
+        // Bir noktaya olan uzaklığı döner (kule menzil kontrolü için)
         public float Mesafe(Point p)
         {
             float dx = Konum.X - p.X;

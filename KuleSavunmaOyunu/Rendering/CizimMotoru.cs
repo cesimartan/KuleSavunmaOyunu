@@ -3,24 +3,22 @@ using KuleSavunmaOyunu.Entities;
 using KuleSavunmaOyunu.Game;
 using System.Drawing.Drawing2D;
 
-
 namespace KuleSavunmaOyunu.Rendering
 {
     public class CizimMotoru
     {
-        // Ana çizim fonksiyonu
+        // Ana çizim çağrısı: yol, kuleler, düşmanlar çizilir.
         public void Ciz(Graphics g, OyunYonetici oyun)
         {
             if (oyun == null)
                 return;
-
-            // Arka planı temizlemiyoruz, panelin BackColor'ı zaten var.
 
             CizYol(g, oyun.Yol);
             CizKuleler(g, oyun.Kuleler);
             CizDusmanlar(g, oyun.Dusmanlar);
         }
 
+        // Yol polilini kalın bir stroke ile çizer, başlangıç/bitis işaretleri ekler.
         private void CizYol(Graphics g, Yol yol)
         {
             var noktalar = yol.Noktalar;
@@ -31,7 +29,7 @@ namespace KuleSavunmaOyunu.Rendering
 
             var pts = new List<Point>(noktalar).ToArray();
 
-            // Dış hat
+            // Dış hat (kalın)
             using (var disKalem = new Pen(Color.FromArgb(120, 60, 20), 26))
             {
                 disKalem.StartCap = LineCap.Round;
@@ -49,16 +47,18 @@ namespace KuleSavunmaOyunu.Rendering
                 g.DrawLines(icKalem, pts);
             }
 
-            // Başlangıç (yeşil) ve bitiş (kırmızı) noktaları
+            // Başlangıç ve bitiş noktalarını işaretle
             Point baslangic = noktalar[0];
             Point bitis = noktalar[noktalar.Count - 1];
 
             CizIsaretNoktasi(g, baslangic, Color.LimeGreen);
             CizIsaretNoktasi(g, bitis, Color.Red);
         }
+
+        // Yol üzerindeki başlangıç/bitis noktalarını çizer.
         private void CizIsaretNoktasi(Graphics g, Point p, Color renk)
         {
-            int r = 15; // nokta yarıçapı (istersen 8/12 yap)
+            int r = 15;
             var rect = new Rectangle(p.X - r, p.Y - r, r * 2, r * 2);
 
             using (var firca = new SolidBrush(renk))
@@ -69,16 +69,16 @@ namespace KuleSavunmaOyunu.Rendering
             }
         }
 
+        // Kulelerin gövdesini, menzilini ve simgesini çizer.
         private void CizKuleler(Graphics g, List<Kule> kuleler)
         {
             int kuleBoyut = 30;
 
             foreach (var kule in kuleler)
             {
-                // Tipine göre stil
                 var (govdeRenk, menzilRenk) = KuleStilGetir(kule);
 
-                // 1) Menzil çemberi (tipine göre farklı renk)
+                // Menzil çemberi
                 using (var menzilKalem = new Pen(Color.FromArgb(70, menzilRenk), 2))
                 {
                     int r = kule.Menzil;
@@ -89,7 +89,7 @@ namespace KuleSavunmaOyunu.Rendering
                         r * 2);
                 }
 
-                // 2) Gövde
+                // Gövde dikdörtgeni
                 Rectangle rect = new Rectangle(
                     kule.Konum.X - kuleBoyut / 2,
                     kule.Konum.Y - kuleBoyut / 2,
@@ -103,11 +103,12 @@ namespace KuleSavunmaOyunu.Rendering
                     g.DrawRectangle(kalem, rect);
                 }
 
-                // 3) Tip sembolü/ikon (şekil + harf)
+                // Tip sembolü
                 CizKuleSembolu(g, kule, rect);
             }
         }
 
+        // Kule tipi bazlı renk döner.
         private (Color govde, Color menzil) KuleStilGetir(Kule kule)
         {
             if (kule is OkKulesi) return (Color.SteelBlue, Color.LightSkyBlue);
@@ -117,54 +118,49 @@ namespace KuleSavunmaOyunu.Rendering
             return (Color.DarkSlateGray, Color.LightBlue);
         }
 
+        // Kule iç simgesini (ok/namlu/elmas) çizer.
         private void CizKuleSembolu(Graphics g, Kule kule, Rectangle rect)
         {
             using var ikonFirca = new SolidBrush(Color.FromArgb(200, Color.White));
             using var ikonKalem = new Pen(Color.FromArgb(220, Color.White), 2);
-            
 
-            // İç alanda çizim (kenarlardan biraz boşluk)
             var inner = Rectangle.Inflate(rect, -6, -6);
 
             if (kule is OkKulesi)
             {
-                // Üçgen (ok ucu gibi)
+                // Üçgen şekli
                 Point[] tri =
                 {
-            new Point(inner.Left + inner.Width / 2, inner.Top),
-            new Point(inner.Right, inner.Bottom),
-            new Point(inner.Left, inner.Bottom)
-        };
+                    new Point(inner.Left + inner.Width / 2, inner.Top),
+                    new Point(inner.Right, inner.Bottom),
+                    new Point(inner.Left, inner.Bottom)
+                };
                 g.FillPolygon(ikonFirca, tri);
-
             }
             else if (kule is TopKulesi)
             {
-                // Daire + küçük namlu çizgisi
+                // Daire ve küçük namlu çizgisi
                 g.FillEllipse(ikonFirca, inner);
                 int cx = inner.Left + inner.Width / 2;
                 g.DrawLine(ikonKalem,
                     cx, inner.Top + 6,
                     cx, inner.Top - 6);
-
-
             }
             else if (kule is BuyuKulesi)
             {
-                // Elmas (diamond)
+                // Elmas şekli
                 Point[] diamond =
                 {
-            new Point(inner.Left + inner.Width / 2, inner.Top),
-            new Point(inner.Right, inner.Top + inner.Height / 2),
-            new Point(inner.Left + inner.Width / 2, inner.Bottom),
-            new Point(inner.Left, inner.Top + inner.Height / 2)
-        };
+                    new Point(inner.Left + inner.Width / 2, inner.Top),
+                    new Point(inner.Right, inner.Top + inner.Height / 2),
+                    new Point(inner.Left + inner.Width / 2, inner.Bottom),
+                    new Point(inner.Left, inner.Top + inner.Height / 2)
+                };
                 g.FillPolygon(ikonFirca, diamond);
-
             }
         }
 
-
+        // Düşmanları çizer; can barı gösterilir.
         private void CizDusmanlar(Graphics g, List<Dusman> dusmanlar)
         {
             int yaricap = 10;
@@ -187,7 +183,7 @@ namespace KuleSavunmaOyunu.Rendering
                     g.DrawEllipse(kalem, daire);
                 }
 
-                // Can barı
+                // Can barı hesapla ve çiz
                 float canOrani = d.MaksCan > 0 ? d.Can / (float)d.MaksCan : 0f;
                 if (canOrani < 0) canOrani = 0;
                 if (canOrani > 1) canOrani = 1;

@@ -31,7 +31,7 @@ namespace KuleSavunmaOyunu.Game
             float dusmanHiz = (float)(temelHiz * Math.Pow(1.08, MevcutDalga - 1));
             var liste = new List<Dusman>();
 
-            int spawnAraligiTicks = 25; // timer 30ms ise ~0.3sn
+            int spawnAraligiTicks = 25; // timer 30ms ise yaklaşık 0.3sn
 
             for (int i = 0; i < dusmanSayisi; i++)
             {
